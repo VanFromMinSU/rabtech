@@ -1,0 +1,33 @@
+{
+  "rabtech": {
+    "status": {
+      "online": false,
+      "l1": 0,
+      "l2": 0,
+      "l3": 0,
+      "temp": 0,
+      "fan": false,
+      "door": false,
+      "hatch1": false,
+      "hatch2": false,
+      "hatch3": false,
+      "lastSeen": 0
+    },
+    "commands": {
+      "requestId": "",
+      "action": "",
+      "target": "",
+      "value": false,
+      "issuedAt": 0,
+      "ackId": ""
+    },
+    "schedules": {
+      "slot1": {"enabled": false, "time": "08:00"},
+      "slot2": {"enabled": false, "time": "12:00"},
+      "slot3": {"enabled": false, "time": "18:00"}
+    },
+    "logs": {
+      "initialized": {"event": "Database initialized", "timestamp": 0}
+    }
+  }
+}
