@@ -899,7 +899,7 @@
       color: #2E5593;
     }
 
-    .report-summary {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 20px;}
+    .report-summary {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0 20px;}
     .report-summary>div {padding:12px;background:var(--sage-soft);border-radius:12px;}
     .report-summary b {display:block;color:var(--moss-deep);font-size:17px;}
     .report-summary span {display:block;color:var(--muted);font-size:11px;}
@@ -6003,13 +6003,12 @@
       wrap.innerHTML=buckets.size?Array.from(buckets,([label,vals])=>{const v=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);return `<div class="report-bar-col" title="${esc(label)}: ${v}%"><div class="bar" style="height:${Math.max(v,2)}%"></div><small>${esc(label)}</small></div>`;}).join(''):'<div class="empty-line">No pellet readings recorded for this period.</div>';
       const fv=$('logFilter').value;
       const rows=state.feedLog.filter(l=>inside(l.ts) && (fv==='all'||l.type===fv));
-      const demoCount=rows.filter(l=>l.demo).length;
-      const avg=readings.length?Math.round(readings.reduce((a,b)=>a+b.value,0)/readings.length):null;
-      $('reportSummary').innerHTML=`<div><b>${esc(range.label)}</b><span>Selected reporting period</span></div><div><b>${rows.length}</b><span>Activity records</span></div><div><b>${avg===null?'—':avg+'%'}</b><span>Average pellet level</span></div><div><b>${demoCount}</b><span>Simulated records</span></div>`;
+            const avg=readings.length?Math.round(readings.reduce((a,b)=>a+b.value,0)/readings.length):null;
+      $('reportSummary').innerHTML=`<div><b>${esc(range.label)}</b><span>Selected reporting period</span></div><div><b>${rows.length}</b><span>Activity records</span></div><div><b>${avg===null?'—':avg+'%'}</b><span>Average pellet level</span></div>`;
       $('logBody').innerHTML=rows.length?rows.map(l=>{
         const t=l.event.toLowerCase();let c='open';
         if(t.includes('close'))c='close';if(t.includes('empty'))c='empty';if(t.includes('refill'))c='refill';if(t.includes('fan'))c='fan';
-        return `<tr><td>${esc(formatTime(l.ts))}</td><td><span class="tag ${c}">${esc(l.event)}</span>${l.demo?' <small class="sim-marker" title="Simulated historical record">Simulated</small>':''}</td></tr>`;
+        return `<tr><td>${esc(formatTime(l.ts))}</td><td><span class="tag ${c}">${esc(l.event)}</span></td></tr>`;
       }).join(''):'<tr><td colspan="2" style="text-align:center;color:var(--muted);padding:28px 0">No matching activity in this period.</td></tr>';
     }
 
