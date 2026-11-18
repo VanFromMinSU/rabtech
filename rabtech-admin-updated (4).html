@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RABTECH · Admin Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --green: #194b38;
+            --green2: #337b59;
+            --cream: #f6f5ec;
+            --line: #e2e9df;
+            --muted: #71857a;
+            --red: #b4533f
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--cream);
+            color: var(--green);
+            font: 14px 'DM Sans', sans-serif
+        }
+
+        button,
+        input,
+        select {
+            font: inherit
+        }
+
+        button {
+            cursor: pointer
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Playfair Display', serif;
+            margin: 0
+        }
+
+        h1 {
+            font-size: 32px
+        }
+
+        h2 {
+            font-size: 22px
+        }
+
+        h3 {
+            font-size: 18px
+        }
+
+        p {
+            line-height: 1.6
+        }
+
+        .hidden {
+            display: none !important
+        }
+
+        .shell {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: 100vh
+        }
+
+        .sidebar {
+            background: #eef4ea;
+            border-right: 1px solid var(--line);
+            padding: 30px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            position: sticky;
+            top: 0;
+            height: 100vh
+        }
+
+        .brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 27px;
+            font-weight: 700;
+            padding: 0 12px
+        }
+
+        .brand small {
+            display: block;
+            font: 12px 'DM Sans', sans-serif;
+            color: var(--muted);
+            margin-top: 3px
+        }
+
+        .nav {
+            display: grid;
+            gap: 8px
+        }
+
+        .nav button {
+            border: 0;
+            background: transparent;
+            color: #647a6d;
+            text-align: left;
+            padding: 14px 16px;
+            border-radius: 13px;
+            font-weight: 700
+        }
+
+        .nav button.active,
+        .nav button:hover {
+            background: var(--green);
+            color: white
+        }
+
+        .bottom {
+            margin-top: auto;
+            overflow-wrap: anywhere;
+            padding: 12px;
+            color: var(--muted)
+        }
+
+        .bottom button {
+            width: 100%;
+            margin-top: 12px
+        }
+
+        .main {
+            min-width: 0
+        }
+
+        .topbar {
+            background: #f6f7ef;
+            border-bottom: 1px solid var(--line);
+            padding: 24px 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px
+        }
+
+        .content {
+            max-width: 1350px;
+            margin: auto;
+            padding: 32px 35px 70px
+        }
+
+        .eyebrow {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #4e946c;
+            text-transform: uppercase
+        }
+
+        .intro {
+            margin: 9px 0 24px;
+            color: var(--muted)
+        }
+
+        .badge {
+            border-radius: 999px;
+            padding: 8px 13px;
+            background: #fff;
+            border: 1px solid var(--line);
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap
+        }
+
+        .badge.on {
+            color: #257c4b
+        }
+
+        .badge.off {
+            color: var(--red)
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 22px
+        }
+
+        .card,
+        .panel {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 23px;
+            padding: 22px;
+            box-shadow: 0 10px 28px #194b3809
+        }
+
+        .card .metric {
+            font: 700 34px 'Playfair Display', serif;
+            margin: 12px 0 4px
+        }
+
+        .card small {
+            color: var(--muted)
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px
+        }
+
+        .panel h3 {
+            margin-bottom: 16px
+        }
+
+        .tablewrap {
+            overflow: auto
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            min-width: 560px
+        }
+
+        th,
+        td {
+            padding: 13px 10px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: top
+        }
+
+        th {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: var(--muted)
+        }
+
+        td {
+            overflow-wrap: anywhere
+        }
+
+        tr:last-child td {
+            border: 0
+        }
+
+        .tools {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: 0 0 16px
+        }
+
+        .field {
+            border: 1px solid var(--line);
+            background: #fff;
+            padding: 12px 13px;
+            border-radius: 11px;
+            min-width: 180px;
+            max-width: 100%;
+            outline-color: #74a98a
+        }
+
+        .btn {
+            background: var(--green);
+            color: #fff;
+            border: 0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-weight: 700
+        }
+
+        .btn.secondary {
+            background: #edf4ee;
+            color: var(--green)
+        }
+
+        .btn.danger {
+            background: #fff1ec;
+            color: #9a4634
+        }
+
+        .btn:disabled {
+            opacity: .45;
+            cursor: not-allowed
+        }
+
+        .alert {
+            background: #fff0e7;
+            color: #98553c;
+            border: 1px solid #f0cdb8;
+            border-radius: 14px;
+            padding: 13px 16px;
+            margin: 15px 0
+        }
+
+        .notice {
+            background: #eaf4ed;
+            color: #286445;
+            border: 1px solid #cce6d4;
+            border-radius: 14px;
+            padding: 13px 16px;
+            margin: 15px 0
+        }
+
+        .detail {
+            font-size: 12px;
+            color: var(--muted);
+            max-width: 400px;
+            word-break: break-word
+        }
+
+        .authwrap {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background: radial-gradient(circle at 70% 20%, #e7e9cb, transparent 45%), #f6f5ec
+        }
+
+        .authbox {
+            width: min(440px, 100%);
+            background: white;
+            border-radius: 27px;
+            border: 1px solid var(--line);
+            padding: 35px;
+            box-shadow: 0 22px 70px #194b3815
+        }
+
+        .authbox h1 {
+            margin: 10px 0
+        }
+
+        .authbox label {
+            display: block;
+            margin: 20px 0 7px;
+            font-weight: 700
+        }
+
+        .authbox input {
+            width: 100%
+        }
+
+        .authbox .btn {
+            width: 100%;
+            margin-top: 22px
+        }
+
+        .authbox .small {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .statusgrid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px
+        }
+
+        .kv {
+            padding: 17px;
+            border-radius: 15px;
+            background: #f4f8f2
+        }
+
+        .kv span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .kv strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 19px
+        }
+
+        .footer {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 24px
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 22px;
+            right: 22px;
+            z-index: 20;
+            background: var(--green);
+            color: #fff;
+            padding: 13px 20px;
+            border-radius: 13px;
+            box-shadow: 0 8px 30px #0002;
+            max-width: 350px
+        }
+
+        #toast:empty {
+            display: none
+        }
+
+        @media(max-width:1050px) {
+            .cards {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .panels {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media(max-width:720px) {
+            .shell {
+                display: block
+            }
+
+            .sidebar {
+                position: static;
+                height: auto;
+                padding: 15px
+            }
+
+            .brand {
+                font-size: 22px
+            }
+
+            .nav {
+                display: flex;
+                overflow: auto
+            }
+
+            .nav button {
+                white-space: nowrap;
+                padding: 10px
+            }
+
+            .bottom {
+                display: none
+            }
+
+            .topbar {
+                padding: 17px
+            }
+
+            .content {
+                padding: 20px
+            }
+
+            .cards {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px
+            }
+
+            .card {
+                padding: 15px
+            }
+
+            .card .metric {
+                font-size: 26px
+            }
+
+            .statusgrid {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        .reportgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:18px 0}
+        .reportmetric{background:#f4f8f2;border-radius:15px;padding:16px;min-width:0}
+        .reportmetric span{display:block;color:var(--muted);font-size:12px}
+        .reportmetric strong{display:block;font-size:25px;margin-top:7px;overflow-wrap:anywhere}
+        .reportbars{display:grid;gap:12px;margin-top:12px}
+        .barrow{display:grid;grid-template-columns:110px 1fr 45px;gap:10px;align-items:center;font-size:12px}
+        .bartrack{background:#e9f0e9;height:13px;border-radius:20px;overflow:hidden}
+        .barfill{background:var(--green2);height:100%;border-radius:20px}
+        .userlink{border:0;background:transparent;color:var(--green2);font-weight:700;text-decoration:underline;padding:0;text-align:left}
+        .subtle{color:var(--muted);font-size:12px}
+        @media(max-width:720px){.reportgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.barrow{grid-template-columns:75px 1fr 32px}}
+        .password-wrap {
+            position: relative;
+            width: 100%;
+            margin-top: 4px;
+            margin-bottom: 12px
+        }
+
+        .password-wrap .field {
+            width: 100%;
+            padding-right: 88px;
+            margin: 0
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 9px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 0;
+            background: #eaf2eb;
+            color: #194b38;
+            padding: 9px 15px;
+            border-radius: 12px;
+            font-weight: 700;
+            min-width: 65px
+        }
+
+        .password-toggle:hover {
+            background: #d8e9dc
+        }
+
+        .password-toggle:focus-visible {
+            outline: 2px solid #337b59;
+            outline-offset: 2px
+        }
+
+/* Admin analytics extension */
+.admin-filter{display:flex;flex-wrap:wrap;align-items:end;gap:12px;margin:0 0 22px;padding:17px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 6px 20px #194b3809}
+.admin-filter label{display:grid;gap:5px;font-size:11px;font-weight:700;color:var(--muted);min-width:130px;flex:1}
+.admin-filter .field{width:100%;min-width:0;padding:10px;margin:0}
+.admin-filter .filter-search{flex:2;min-width:180px}
+.admin-filter .btn{align-self:end;white-space:nowrap}
+.admin-charts{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:0 0 20px}
+.chart-bars{display:flex;align-items:end;gap:7px;height:190px;padding:18px 8px 28px;border-bottom:1px solid var(--line)}
+.chart-bar{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;align-items:stretch;justify-content:end;position:relative;border:0;background:transparent;padding:0;cursor:pointer}
+.chart-bar .fill{display:block;background:linear-gradient(#6aa480,#194b38);min-height:2px;border-radius:6px 6px 0 0;transition:opacity .2s}
+.chart-bar:hover .fill,.chart-bar:focus-visible .fill{opacity:.65}
+.chart-bar small{position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap}
+.chart-bar .chart-value{font-size:10px;text-align:center;color:var(--green);font-weight:700}
+.chart-caption{font-size:12px;color:var(--muted);margin-top:14px}
+.filter-note{font-size:12px;color:var(--muted);margin:0 0 16px}
+.print-header{display:none}
+@media(max-width:900px){.admin-charts{grid-template-columns:1fr}.admin-filter label{min-width:145px}}
+@media(max-width:520px){.admin-filter{display:grid;grid-template-columns:1fr 1fr}.admin-filter label{min-width:0}.admin-filter .filter-search{grid-column:1/-1}.admin-filter .btn{width:100%}}
+
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;background:#edf1ea;color:#5d7367;white-space:nowrap}
+.pill.servo,.pill.real{background:#e3f1e7;color:#257c4b}.pill.fan{background:#e1eef3;color:#2d6a82}.pill.sensor{background:#fbf0d9;color:#8a6618}.pill.alert{background:#fff0e7;color:#98553c}.pill.demo{background:#f1efe4;color:#7b7a58}
+.seg{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.seg button{border:1px solid var(--line);background:#fff;color:var(--green);padding:10px 16px;border-radius:12px;font-weight:700}.seg button.active{background:var(--green);color:#fff}
+.pager{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:16px;color:var(--muted)}
+.lvl{display:inline-block;vertical-align:middle;width:90px;height:9px;background:#e9f0e9;border-radius:9px;overflow:hidden;margin-right:8px}.lvl i{display:block;height:100%;background:var(--green2)}
+.chart-bars{overflow-x:auto}.chart-bar{min-width:16px}tr[data-day]:hover{background:#f4f8f2}
+#printArea{display:none}
+@media print{@page{size:A4;margin:12mm}body{background:#fff;color:#111;font-size:10px}.shell,#login,#toast{display:none!important}#printArea{display:block}
+.ph{border-bottom:2px solid #194b38;margin-bottom:12px;padding-bottom:8px}.ph p,#printArea p{margin:3px 0;line-height:1.4}.pu+.pu{break-before:page}
+#printArea table{min-width:0;font-size:9px}#printArea th,#printArea td{padding:4px 5px}tr{break-inside:avoid}thead{display:table-header-group}
+#printArea .tools,#printArea input,#printArea select,#printArea .btn,#printArea .pager{display:none}
+.pill{background:#fff!important;color:#111!important;border:1px solid #bbb;padding:1px 6px}.lvl{border:1px solid #999}.lvl i{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style>
+</head>
+
+<body>
+    <section id="login" class="authwrap">
+        <form id="loginForm" class="authbox">
+            <div class="eyebrow">RABTECH MANAGEMENT</div>
+            <h1>Admin console</h1>
+            <p class="intro">Sign in with your authorized RABTECH administrator account.</p><label for="email">Email
+                address</label><input class="field" id="email" type="email" autocomplete="username" required><label
+                for="password">Password</label>
+            <div class="password-wrap"><input class="field" id="password" type="password"
+                    autocomplete="current-password" required><button type="button" id="reveal" class="password-toggle"
+                    aria-label="Show password" aria-pressed="false">Show</button></div><button class="btn" id="loginBtn"
+                type="submit">Sign in</button>
+            <p class="small">Only the designated administrator can access this console.</p>
+            <div id="loginError" class="alert hidden" role="alert"></div>
+        </form>
+    </section>
+    <div id="shell" class="shell hidden">
+        <aside class="sidebar">
+            <div class="brand">🐰 rabtech<small>admin management</small></div>
+            <nav class="nav"><button data-tab="overview" class="active">◫ &nbsp; Overview</button><button
+                    data-tab="users">♙ &nbsp; Users</button><button data-tab="activity">☷ &nbsp;
+                    Activity</button><button data-tab="device">◉ &nbsp; Device status</button><button
+                    data-tab="schedules">◷ &nbsp; Schedules</button><button data-tab="reports">▥ &nbsp; Reports</button><button data-tab="history">▤ &nbsp; User data</button><button data-tab="settings">⚙ &nbsp;
+                    Settings</button></nav>
+            <div class="bottom"><span id="adminEmail"></span><button id="signout" class="btn secondary">Sign
+                    out</button></div>
+        </aside>
+        <div class="main">
+            <header class="topbar"><strong id="pageTitle">Overview</strong><span id="deviceBadge" class="badge off">●
+                    Offline</span></header>
+            <main class="content">
+                <div class="eyebrow">RABTECH SMART CARE</div>
+                <h1 id="pageHeading">Admin overview</h1>
+                <p id="pageIntro" class="intro">Monitor your feeder and account activity.</p>
+                <div id="systemError" class="alert hidden"></div>
+                <div class="admin-filter" id="adminFilterBar">
+                    <label>User account<select class="field" id="fUser"><option value="">All users</option></select></label>
+                    <label class="filter-search">Search records<input class="field" id="fSearch" type="search" placeholder="Event, message, email, UID..."></label>
+                    <label>From date<input class="field" id="fFrom" type="date"></label>
+                    <label>To date<input class="field" id="fTo" type="date"></label>
+                    <button class="btn" id="fPrint" type="button">Print</button>
+                </div>
+                <p class="filter-note" id="filterSummary">Showing recorded data. Shared device telemetry is not user-specific.</p>
+
+                <section data-page="overview">
+                    <div class="cards">
+                        <div class="card"><small>Known users</small>
+                            <div id="metricUsers" class="metric">—</div><small>Profiles recorded by this app</small>
+                        </div>
+                        <div class="card"><small>Feeding events</small>
+                            <div id="metricEvents" class="metric">—</div><small>Feeding events in selected range</small>
+                        </div>
+                        <div class="card"><small>Feeder status</small>
+                            <div id="metricOnline" class="metric">Offline</div><small>Heartbeat based</small>
+                        </div>
+                        <div class="card"><small>Last heartbeat</small>
+                            <div id="metricSeen" class="metric" style="font-size:20px">—</div><small>Device reporting
+                                time</small>
+                        </div>
+                    </div>
+
+                    <div class="admin-charts">
+                        <div class="panel"><h3>Feeding events by day</h3><div class="chart-bars" id="overviewDaily"></div><p class="chart-caption">Click a bar to filter to that day.</p></div>
+                        <div class="panel"><h3>Event breakdown</h3><div id="overviewActions" class="reportbars"></div><p class="chart-caption">Based on saved feeding history.</p></div>
+                    </div>
+                    <div class="panels">
+                        <div class="panel">
+                            <h3>Recent activity</h3>
+                            <div id="recentEvents">No activity recorded yet.</div>
+                        </div>
+                        <div class="panel">
+                            <h3>Feeder snapshot</h3>
+                            <div class="statusgrid">
+                                <div class="kv"><span>Pellet 1</span><strong id="oL1">—</strong></div>
+                                <div class="kv"><span>Pellet 2</span><strong id="oL2">—</strong></div>
+                                <div class="kv"><span>Pellet 3</span><strong id="oL3">—</strong></div>
+                                <div class="kv"><span>Water level</span><strong id="oWater">—</strong></div><div class="kv"><span>Fan</span><strong id="oFan">—</strong></div>
+                                <div class="kv"><span>Temperature</span><strong id="oTemp">—</strong></div>
+                                <div class="kv"><span>Last result</span><strong id="oResult">—</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section data-page="users" class="hidden">
+                    <div class="panel">
+                        <div class="tools"><input id="userSearch" class="field" placeholder="Search email or UID"
+                                aria-label="Search users"><button class="btn secondary" id="exportUsers">Export
+                                CSV</button></div>
+                        <p class="intro">Shows accounts that have signed in through the updated RABTECH website.
+                            Previously registered accounts appear after their next login.</p>
+                        <div class="tablewrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Email</th>
+                                        <th>UID</th>
+                                        <th>Verified</th>
+                                        <th>First seen</th>
+                                        <th>Last login</th>
+                                        <th>Feeding events</th><th>Alerts</th><th>Pellet readings</th><th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <section data-page="activity" class="hidden">
+                    <div class="panel">
+                        <div class="tools"><input id="activitySearch" class="field"
+                                placeholder="Search email, action or UID" aria-label="Search activity"><select
+                                id="actionFilter" class="field">
+                                <option value="">All actions</option>
+                                <option value="login">Login</option>
+                                <option value="logout">Logout</option>
+                                <option value="command_sent">Commands</option>
+                                <option value="command_acknowledged">Acknowledgments</option>
+                                <option value="schedule_saved">Schedules saved</option>
+                                <option value="schedule_cleared">Schedules cleared</option>
+                            </select><button id="exportActivity" class="btn secondary">Export CSV</button></div>
+                        <p class="intro">Events are reported by the website and may be incomplete if a client is
+                            offline, modified, or using an older version. They are not a tamper-proof audit trail.</p>
+                        <div class="tablewrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>User</th>
+                                        <th>Action</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activityBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <section data-page="device" class="hidden">
+                    <div class="panel">
+                        <h3>Live device telemetry</h3>
+                        <p class="intro">Status is considered online only when the last heartbeat is less than 90
+                            seconds old.</p>
+                        <div id="deviceDetails" class="statusgrid"></div>
+                        <div class="tools" style="margin-top:20px"><button id="refreshStatus"
+                                class="btn secondary">Refresh status</button><button id="openDashboard" class="btn">Open
+                                feeder dashboard</button></div>
+                    </div>
+                </section>
+                <section data-page="schedules" class="hidden">
+                    <div class="panel">
+                        <h3>Saved feeding schedules</h3>
+                        <p class="intro">Read-only view of the three slots currently configured for the shared feeder.
+                        </p>
+                        <div id="scheduleDetails" class="statusgrid"></div>
+                    </div>
+                </section>
+                <section data-page="reports" class="hidden">
+                    <div class="panel"><h3>Report summary</h3><div id="reportMetrics" class="reportgrid"></div><div class="tools"><button class="btn secondary" id="exportReport">Export daily log CSV</button></div></div>
+                    <div class="panels" style="margin-top:18px">
+                        <div class="panel"><h3>Pellet level over time</h3><div id="reportPellets"></div></div>
+                        <div class="panel"><h3>Per-user totals</h3><div class="tablewrap"><table><thead><tr><th>User</th><th>Events</th><th>Alerts</th><th>Readings</th><th>Last record</th></tr></thead><tbody id="reportUsersBody"></tbody></table></div></div>
+                    </div>
+                    <div class="panel" style="margin-top:18px"><h3>Daily log</h3><p class="intro">Totals per day (Philippine time). Click a day to open its records.</p><div class="tablewrap"><table><thead><tr><th>Date</th><th>Events</th><th>Feedings</th><th>Fan on</th><th>Refills</th><th>Alerts</th><th>Readings</th><th>Avg level</th><th>Lowest</th></tr></thead><tbody id="reportBody"></tbody></table></div></div>
+                </section>
+                <section data-page="history" class="hidden"><div class="panel"><h3>Saved data by user</h3><p class="intro" id="historySummary"></p>
+                    <div class="seg" id="subTabs"><button data-sub="history" class="active">Feeding history</button><button data-sub="notifications">Notifications</button><button data-sub="pellets">Pellet readings</button></div>
+                    <div class="tools"><select class="field" id="udType"></select><select class="field" id="udExtra"></select><button class="btn secondary" id="sortBtn" type="button">Newest first</button><button class="btn secondary" id="exportHistory" type="button">Export CSV</button><button class="btn secondary" id="printTable" type="button">Print table</button><button class="btn secondary" id="printFull" type="button">Print full record</button><button class="btn secondary" id="reloadUserData" type="button">Reload</button></div>
+                    <p id="userDataDiagnostic" class="subtle" role="status"></p>
+                    <div class="tablewrap"><table><thead id="udHead"></thead><tbody id="udBody"></tbody></table></div><div id="udPager"></div></div></section>
+                <section data-page="settings" class="hidden">
+                    <div class="panel">
+                        <h3>Administration and security</h3>
+                        <p>Administrator access is restricted by the signed-in account UID in the database security
+                            rules. A separate check in this page is only for user experience.</p>
+                        <div class="kv"><span>Administrator account UID</span><strong id="myUid"
+                                style="font-size:13px;word-break:break-all"></strong></div>
+                        <p class="intro">New users can use the normal RABTECH website after verifying their email. This
+                            console does not approve accounts or manage Firebase Authentication passwords.</p>
+                        <p><a href="index.html">Go to the regular RABTECH dashboard →</a></p>
+                    </div>
+                </section>
+                <p class="footer">RABTECH Admin · Data access is enforced by database security rules. Avoid sharing this
+                    administrator account.</p>
+            </main>
+        </div>
+    </div>
+    <div id="printArea"></div>
+    <div id="toast" role="status"></div>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script>
+'use strict';
+firebase.initializeApp({ apiKey: "AIzaSyBf9E8ToQKG0qKPWkLM9S0qzGNUP3ZMVCE", authDomain: "rabtech-80cc2.firebaseapp.com", databaseURL: "https://rabtech-80cc2-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "rabtech-80cc2", storageBucket: "rabtech-80cc2.firebasestorage.app", messagingSenderId: "225089463180", appId: "1:225089463180:web:b6916e1b252bda16d4eca9" });
+const auth = firebase.auth(), db = firebase.database();
+const ADMIN_UID = 'JaGyQpaiOzPe2LQmxF0lza8dJrt1', PINNED = ['P62OJJKY45hpVlyDeXHUgE12nOv1'], DEFAULT_FROM = '2026-09-07', TZ = 'Asia/Manila', PAGE = 100;
+let users = {}, events = [], status = {}, schedules = {}, userData = {}, load = {}, cache = {}, pg = {}, unsubs = [], session = 0, activeTab = 'overview', sub = 'history', sortAsc = false, toastTimer, raf, qTimer;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const intl = o => new Intl.DateTimeFormat('en-US', { timeZone: TZ, ...o });
+const toMs = v => { let n = Number(v); if (n > 0 && n < 1e12) n *= 1000; return n > 9.4e11 && n < Date.now() + 864e5 ? n : 0 };
+const dayKey = ms => { const p = {}; intl({ year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(ms).forEach(x => p[x.type] = x.value); return p.year + '-' + p.month + '-' + p.day };
+const fmt = t => { const n = toMs(t); return n ? intl({ month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit' }).format(n) : '—' };
+const fmtDay = k => intl({ month: 'short', day: 'numeric', year: 'numeric' }).format(Date.parse(k + 'T12:00:00+08:00'));
+const dayStart = k => Date.parse(k + 'T00:00:00+08:00'), dayEnd = k => Date.parse(k + 'T23:59:59.999+08:00'), today = () => dayKey(Date.now());
+const schedule = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(render) };
+function notify(s) { $('toast').textContent = s; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').textContent = '', 3500) }
+function error(s) { $('systemError').textContent = s; $('systemError').classList.remove('hidden') }
+function clearError() { $('systemError').classList.add('hidden') }
+function online() { const n = Number(status.lastSeen), age = Date.now() - n; return n > 0 && age >= -15000 && age < 90000 && status.online !== false }
+function csv(rows, name) { const c = rows.map(r => r.map(v => { v = String(v ?? ''); if (/^[=+@]/.test(v)) v = "'" + v; return '"' + v.replaceAll('"', '""') + '"' }).join(',')).join('\r\n'); const url = URL.createObjectURL(new Blob(['\ufeff', c], { type: 'text/csv;charset=utf-8' })); const a = document.createElement('a'); a.href = url; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000) }
+
+// ---------- data model ----------
+const isDemo = () => false;
+function firstSeen(u) { const r = recs(u), t = [...r.h, ...r.n, ...r.p].map(x => x.ts).filter(Boolean), p = toMs(users[u]?.firstSeen), m = Math.min(...t, p || Infinity); return isFinite(m) ? m : 0 }
+const label = u => users[u]?.email || u;
+function recs(uid) {
+  const d = userData[uid]; if (!d) return { h: [], n: [], p: [] };
+  const c = cache[uid]; if (c && c.src === d) return c;
+  const mk = o => Object.entries(o || {}).filter(([, x]) => x && typeof x === 'object').map(([id, x]) => ({ ...x, id, uid, ts: toMs(x.timestamp ?? x.createdAt ?? x.time), demo: isDemo(x) }));
+  return cache[uid] = { src: d, h: mk(d.feedingHistory), n: mk(d.notifications), p: mk(d.pelletReadings) };
+}
+const F = () => ({ uid: $('fUser').value, q: $('fSearch').value.trim().toLowerCase(), from: $('fFrom').value, to: $('fTo').value, src: '' });
+const uids = f => f.uid ? [f.uid] : [...new Set([...Object.keys(users), ...PINNED, ...Object.keys(userData)])];
+const TF = { h: x => x.event + ' ' + x.type, n: x => x.title + ' ' + x.body + ' ' + x.category, p: x => x.value + '%' };
+function pick(k, f) {
+  const a = f.from ? dayStart(f.from) : 0, b = f.to ? dayEnd(f.to) : Infinity, out = [];
+  for (const u of uids(f)) for (const x of recs(u)[k]) {
+    if ((a || b < Infinity) && (!x.ts || x.ts < a || x.ts > b)) continue;
+    if ((f.src === 'real' && x.demo) || (f.src === 'demo' && !x.demo)) continue;
+    if (f.q && !(TF[k](x) + ' ' + label(u)).toLowerCase().includes(f.q)) continue;
+    out.push(x);
+  }
+  return out;
+}
+const act = x => { const s = String(x.event || '').toLowerCase(); return /refill/.test(s) ? 'refilled' : /opened/.test(s) ? 'opened' : /closed/.test(s) ? 'closed' : /fan.*\bon\b/.test(s) ? 'fan on' : /fan.*off/.test(s) ? 'fan off' : 'other' };
+function dailyMap(h, n, p) {
+  const m = {}, r = x => x.ts ? (m[dayKey(x.ts)] ||= { e: 0, feed: 0, fan: 0, ref: 0, alert: 0, pn: 0, pmin: 101, psum: 0 }) : null;
+  h.forEach(x => { const d = r(x); if (!d) return; d.e++; const a = act(x); if (a === 'opened') d.feed++; if (a === 'fan on') d.fan++; if (a === 'refilled') d.ref++ });
+  n.forEach(x => { const d = r(x); if (d && x.warn) d.alert++ });
+  p.forEach(x => { const d = r(x); if (!d) return; d.pn++; d.psum += Number(x.value) || 0; d.pmin = Math.min(d.pmin, Number(x.value) || 0) });
+  return m;
+}
+function stats(f) { const h = pick('h', f), n = pick('n', f), p = pick('p', f); return { h, n, p, m: dailyMap(h, n, p) } }
+const cmp = (a, b) => sortAsc ? a.ts - b.ts : b.ts - a.ts;
+const SUBK = { history: 'h', notifications: 'n', pellets: 'p' };
+function tableRows(f, S) {
+  S = S || stats(f); const k = SUBK[sub], t = $('udType').value, e = $('udExtra').value; let r = S[k];
+  if (k === 'h') r = r.filter(x => (!t || x.type === t) && (!e || act(x) === e));
+  if (k === 'n') r = r.filter(x => (!t || x.category === t) && (!e || (x.warn ? 'alert' : 'info') === e));
+  if (k === 'p' && t) { const [a, b] = t.split('-').map(Number); r = r.filter(x => x.value >= a && x.value <= b) }
+  return r.slice().sort(cmp);
+}
+
+// ---------- fetching ----------
+async function fetchUser(uid) {
+  if (load[uid] !== 'ok') load[uid] = 'loading';
+  try { const v = (await db.ref('/rabtech/userData/' + uid).once('value')).val(); userData[uid] = v && typeof v === 'object' ? v : {}; load[uid] = 'ok' }
+  catch (e) { load[uid] = 'ERR ' + (e.code || e.message); error('Cannot read data of ' + label(uid) + ': ' + (e.code || e.message) + '. Check the database rules.') }
+  schedule();
+}
+async function fetchAll(force) {
+  const ids = uids({ uid: '' }).filter(u => force || !load[u] || String(load[u]).startsWith('ERR'));
+  for (let i = 0; i < ids.length; i += 6) await Promise.all(ids.slice(i, i + 6).map(fetchUser));
+}
+
+// ---------- cell helpers ----------
+const pill = (t, c) => '<span class="pill ' + esc(c || String(t).toLowerCase()) + '">' + esc(t) + '</span>';
+const srcB = x => x.demo ? pill('Demo', 'demo') : pill('Recorded', 'real');
+const bar = v => '<span class="lvl"><i style="width:' + Math.min(100, Number(v) || 0) + '%"></i></span>' + esc(v) + '%';
+const C = {
+  h: { n: 'Feeding history', heads: ['Date & time', 'Type', 'Event'], row: x => [fmt(x.ts), pill(x.type || 'system'), esc(x.event || '—')] },
+  n: { n: 'Notifications', heads: ['Date & time', 'Title', 'Message', 'Category', 'Level'], row: x => [fmt(x.ts), esc(x.title || '—'), esc(x.body || x.message || '—'), pill(x.category || '—'), x.warn ? pill('Alert', 'alert') : pill('Info', 'fan')] },
+  p: { n: 'Pellet readings', heads: ['Date & time', 'Pellet level'], row: x => [fmt(x.ts), bar(x.value)] }
+};
+const CSVH = { h: ['Type', 'Event'], n: ['Category', 'Level', 'Title', 'Message'], p: ['Pellet level %'] };
+const CSVR = { h: x => [x.type, x.event], n: x => [x.category, x.warn ? 'Alert' : 'Info', x.title, x.body], p: x => [x.value] };
+const tbl = (h, rows) => '<table><thead><tr>' + h.map(x => '<th>' + x + '</th>').join('') + '</tr></thead><tbody>' + rows.map(r => '<tr>' + r.map(v => '<td>' + v + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+const DH = ['Date', 'Events', 'Feedings', 'Fan on', 'Refills', 'Alerts', 'Readings', 'Avg level', 'Lowest'];
+const dailyRows = (m, click = true) => Object.keys(m).sort().reverse().map(d => { const r = m[d]; return '<tr' + (click ? ' data-day="' + d + '" style="cursor:pointer"' : '') + '><td>' + fmtDay(d) + '</td><td>' + r.e + '</td><td>' + r.feed + '</td><td>' + r.fan + '</td><td>' + r.ref + '</td><td>' + r.alert + '</td><td>' + r.pn + '</td><td>' + (r.pn ? Math.round(r.psum / r.pn) + '%' : '—') + '</td><td>' + (r.pn ? r.pmin + '%' : '—') + '</td></tr>' }).join('');
+function slice(name, arr) {
+  const n = Math.max(1, Math.ceil(arr.length / PAGE)); pg[name] = Math.min(pg[name] || 0, n - 1); const p = pg[name];
+  return { rows: arr.slice(p * PAGE, p * PAGE + PAGE), nav: arr.length ? '<div class="pager"><button class="btn secondary" data-pg="' + name + ':-1"' + (p ? '' : ' disabled') + '>‹ Prev</button><span>' + (p * PAGE + 1) + '–' + Math.min(arr.length, p * PAGE + PAGE) + ' of ' + arr.length + '</span><button class="btn secondary" data-pg="' + name + ':1"' + (p < n - 1 ? '' : ' disabled') + '>Next ›</button></div>' : '' };
+}
+function svgPellets(rs) {
+  rs = rs.filter(x => x.ts).sort((a, b) => a.ts - b.ts); if (rs.length < 2) return '<p class="subtle">Not enough pellet readings in this range.</p>';
+  const W = 720, H = 220, L = 34, R = 8, T = 10, B = 22, t0 = rs[0].ts, t1 = rs[rs.length - 1].ts, X = t => L + (t - t0) / (t1 - t0 || 1) * (W - L - R), Y = v => T + (100 - Math.min(100, v)) / 100 * (H - T - B);
+  let d = '', prev = 0; rs.forEach(x => { d += (prev && x.ts - prev < 1296e5 ? 'L' : 'M') + X(x.ts).toFixed(1) + ' ' + Y(x.value).toFixed(1); prev = x.ts });
+  const grid = [0, 25, 50, 75, 100].map(v => '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '" stroke="#e2e9df"/><text x="' + (L - 5) + '" y="' + (Y(v) + 3) + '" font-size="9" text-anchor="end" fill="#71857a">' + v + '</text>').join('');
+  const xl = [0, .5, 1].map(f => { const t = t0 + f * (t1 - t0); return '<text x="' + X(t) + '" y="' + (H - 6) + '" font-size="9" text-anchor="' + (f === 0 ? 'start' : f === 1 ? 'end' : 'middle') + '" fill="#71857a">' + esc(intl({ month: 'short', day: 'numeric' }).format(t)) + '</text>' }).join('');
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto">' + grid + xl + '<path d="' + d + '" fill="none" stroke="#337b59" stroke-width="1.6"/></svg><p class="chart-caption">' + rs.length + ' readings (% level). Gaps longer than 36 h are not joined.</p>';
+}
+function dayList(f, m) { const ks = Object.keys(m).sort(), a = f.from || ks[0], b = f.to || today(); if (!a) return []; const out = []; for (let t = dayStart(a); t <= dayEnd(b) && out.length < 400; t += 864e5) out.push(dayKey(t)); return out }
+
+// ---------- renderers ----------
+function renderStatus() {
+  const on = online(); $('deviceBadge').textContent = on ? '● Online' : '● Offline'; $('deviceBadge').className = 'badge ' + (on ? 'on' : 'off');
+  $('metricOnline').textContent = on ? 'Online' : 'Offline'; $('metricSeen').textContent = status.lastSeen ? fmt(status.lastSeen) : 'Never';
+  [['oL1', 'l1'], ['oL2', 'l2'], ['oL3', 'l3']].forEach(([id, k]) => $(id).textContent = status[k] == null ? '—' : status[k] + '%');
+  $('oTemp').textContent = status.temp == null || status.tempValid === false ? '—' : status.temp + '°C';
+  $('oWater').textContent = status.waterLevel == null || status.waterValid === false || status.waterReliable === false ? '—' : status.waterLevel + '%';
+  $('oFan').textContent = status.fan === undefined ? '—' : status.fan ? 'On' : 'Off'; $('oResult').textContent = status.lastCommandResult || '—';
+  if (activeTab === 'device') renderDevice();
+}
+function renderDevice() {
+  const d = { Connection: online() ? 'Online' : 'Offline', 'Last heartbeat': fmt(status.lastSeen), 'Heartbeat age': status.lastSeen ? Math.max(0, Math.round((Date.now() - Number(status.lastSeen)) / 1000)) + ' sec' : '—', 'Pellet 1': status.l1 ?? '—', 'Pellet 2': status.l2 ?? '—', 'Pellet 3': status.l3 ?? '—', Fan: status.fan ? 'On' : 'Off', 'Temperature (outdoor)': status.tempValid === false || status.temp == null ? '—' : status.temp + ' °C', 'Water level': status.waterValid === false || status.waterReliable === false || status.waterLevel == null ? '—' : status.waterLevel + '%', 'Water distance': status.waterDistanceCm == null ? '—' : status.waterDistanceCm + ' cm', 'Hatch 1': String(status.hatch1 ?? '—'), 'Hatch 2': String(status.hatch2 ?? '—'), 'Hatch 3': String(status.hatch3 ?? '—'), 'Last command result': status.lastCommandResult || '—' };
+  $('deviceDetails').innerHTML = Object.entries(d).map(([k, v]) => '<div class="kv"><span>' + esc(k) + '</span><strong>' + esc(v) + '</strong></div>').join('');
+}
+function rSchedules() { $('scheduleDetails').innerHTML = [1, 2, 3].map(n => { const s = schedules['slot' + n]; const v = typeof s === 'string' ? s : s?.enabled ? s.time : 'Not set'; return '<div class="kv"><span>Slot ' + n + '</span><strong>' + esc(v || 'Not set') + '</strong></div>' }).join('') }
+function rOverview(f, S) {
+  $('metricUsers').textContent = uids(f).length; $('metricEvents').textContent = S.h.length;
+  const days = dayList(f, S.m), max = Math.max(1, ...days.map(d => S.m[d]?.e || 0));
+  $('overviewDaily').innerHTML = days.map((d, i) => { const n = S.m[d]?.e || 0; return '<button class="chart-bar" type="button" data-day="' + d + '" title="' + fmtDay(d) + ': ' + n + ' events"><span class="chart-value">' + n + '</span><span class="fill" style="height:' + Math.max(2, Math.round(n / max * 130)) + 'px"></span>' + (i % 6 === 0 || i === days.length - 1 ? '<small>' + d.slice(5) + '</small>' : '') + '</button>' }).join('') || '<p class="subtle">No data.</p>';
+  const by = {}; S.h.forEach(x => { const k = x.event || 'Unspecified'; by[k] = (by[k] || 0) + 1 });
+  const top = Object.entries(by).sort((a, b) => b[1] - a[1]).slice(0, 8), pk = Math.max(1, ...top.map(x => x[1]));
+  $('overviewActions').innerHTML = top.map(([a, n]) => '<div class="barrow"><span title="' + esc(a) + '">' + esc(a) + '</span><div class="bartrack"><div class="barfill" style="width:' + Math.round(n / pk * 100) + '%"></div></div><strong>' + n + '</strong></div>').join('') || '<p class="subtle">No matching events.</p>';
+  $('recentEvents').innerHTML = S.h.slice().sort((a, b) => b.ts - a.ts).slice(0, 6).map(x => '<div style="padding:12px 0;border-bottom:1px solid var(--line)"><b>' + esc(x.event) + '</b><div class="detail">' + esc(label(x.uid)) + ' · ' + fmt(x.ts) + '</div></div>').join('') || '<p class="intro">No matching activity.</p>';
+}
+function rUsers(f) {
+  const q = $('userSearch').value.toLowerCase(), S = stats({ ...f, q: '' }), c = (k, u) => S[k].filter(x => x.uid === u);
+  const rows = uids(f).filter(u => (u + ' ' + (users[u]?.email || '')).toLowerCase().includes(q)).sort((a, b) => (users[b]?.lastLogin || 0) - (users[a]?.lastLogin || 0));
+  $('usersBody').innerHTML = rows.map(u => { const p = users[u] || {}; return '<tr><td><button class="userlink" data-uid="' + esc(u) + '">' + esc(p.email || '(no profile)') + '</button></td><td class="detail">' + esc(u) + '</td><td>' + (p.emailVerified ? 'Yes' : 'No') + '</td><td>' + fmt(firstSeen(u)) + '</td><td>' + fmt(p.lastLogin) + '</td><td>' + c('h', u).length + '</td><td>' + c('n', u).filter(x => x.warn).length + '</td><td>' + c('p', u).length + '</td><td><button class="btn secondary" data-uid="' + esc(u) + '">Open data</button></td></tr>' }).join('') || '<tr><td colspan="9">No matching users.</td></tr>';
+}
+function actEvents(f) {
+  const q = $('activitySearch').value.toLowerCase(), a = $('actionFilter').value, A = f.from ? dayStart(f.from) : 0, B = f.to ? dayEnd(f.to) : Infinity;
+  return events.filter(e => { const t = toMs(e.timestamp), s = [e.uid, e.email, e.action, e.details].join(' ').toLowerCase(); return (!f.uid || e.uid === f.uid) && (!a || e.action === a) && ((!A && B === Infinity) || (t >= A && t <= B)) && s.includes(q) && (!f.q || s.includes(f.q)) });
+}
+function rActivity(f) {
+  const sl = slice('act', actEvents(f));
+  $('activityBody').innerHTML = sl.rows.map(e => '<tr><td>' + fmt(e.timestamp) + '</td><td>' + esc(e.email || e.uid) + '</td><td><b>' + esc(e.action) + '</b></td><td class="detail">' + esc(e.details || '—') + '</td></tr>').join('') || '<tr><td colspan="4">No matching events.</td></tr>';
+  let el = $('activityPager'); if (!el) { el = document.createElement('div'); el.id = 'activityPager'; $('activityBody').closest('.tablewrap').after(el) } el.innerHTML = sl.nav;
+}
+function rHistory(f, S) {
+  const k = SUBK[sub], all = tableRows(f, S), multi = !f.uid, c = C[k], sl = slice('ud', all), heads = c.heads.slice(); if (multi) heads.splice(1, 0, 'User');
+  $('udHead').innerHTML = '<tr>' + heads.map(h => '<th>' + h + '</th>').join('') + '</tr>';
+  $('udBody').innerHTML = sl.rows.map(x => { const r = c.row(x); if (multi) r.splice(1, 0, esc(label(x.uid))); return '<tr>' + r.map(v => '<td>' + v + '</td>').join('') + '</tr>' }).join('') || '<tr><td colspan="' + heads.length + '">No records match the current filters.</td></tr>';
+  $('udPager').innerHTML = sl.nav;
+  $('historySummary').textContent = all.length + ' matching ' + c.n.toLowerCase() + ' · times shown in Philippine time (UTC+8).';
+  $('subTabs').querySelectorAll('button').forEach(b => { const kk = SUBK[b.dataset.sub]; b.classList.toggle('active', b.dataset.sub === sub); b.textContent = C[kk].n + ' (' + S[kk].length + ')' });
+  $('sortBtn').textContent = sortAsc ? 'Oldest first' : 'Newest first';
+}
+function rReports(f, S) {
+  const lv = S.p.slice().sort((a, b) => b.ts - a.ts)[0], sum = k => Object.values(S.m).reduce((a, r) => a + r[k], 0);
+  const M = [['Feeding events', S.h.length], ['Feedings (hatch opened)', sum('feed')], ['Fan turned on', sum('fan')], ['Container refills', sum('ref')], ['Notifications', S.n.length], ['Alerts', S.n.filter(x => x.warn).length], ['Pellet readings', S.p.length], ['Latest pellet level', lv ? lv.value + '%' : '—']];
+  $('reportMetrics').innerHTML = M.map(([a, b]) => '<div class="reportmetric"><span>' + a + '</span><strong>' + b + '</strong></div>').join('');
+  $('reportPellets').innerHTML = svgPellets(S.p);
+  $('reportUsersBody').innerHTML = uids(f).map(u => { const g = k => S[k].filter(x => x.uid === u), t = Math.max(0, ...[...g('h'), ...g('n'), ...g('p')].map(x => x.ts)); return '<tr><td><button class="userlink" data-uid="' + esc(u) + '">' + esc(label(u)) + '</button></td><td>' + g('h').length + '</td><td>' + g('n').filter(x => x.warn).length + '</td><td>' + g('p').length + '</td><td>' + (t ? fmt(t) : '—') + '</td></tr>' }).join('');
+  $('reportBody').innerHTML = dailyRows(S.m) || '<tr><td colspan="9">No records in this range.</td></tr>';
+}
+function render() {
+  if ($('shell').classList.contains('hidden')) return;
+  syncUsers(); const f = F(), S = stats(f); renderStatus();
+  const ids = uids(f), ok = ids.filter(u => load[u] === 'ok').length, er = ids.filter(u => String(load[u] || '').startsWith('ERR'));
+  $('filterSummary').textContent = (f.uid ? label(f.uid) : 'All users') + ' · ' + (f.from || f.to ? (f.from ? fmtDay(f.from) : 'start') + ' → ' + (f.to ? fmtDay(f.to) : 'today') : 'All time') + ' · ' + S.h.length + ' feeding events · ' + S.n.length + ' notifications · ' + S.p.length + ' pellet readings';
+  $('userDataDiagnostic').textContent = 'Loaded ' + ok + ' of ' + ids.length + ' user(s)' + (er.length ? ' · read failed: ' + er.map(u => label(u) + ' (' + load[u].slice(4) + ')').join(', ') : '');
+  ({ overview: rOverview, users: rUsers, activity: rActivity, device: renderDevice, schedules: rSchedules, reports: rReports, history: rHistory })[activeTab]?.(f, S);
+}
+function syncUsers() {
+  const s = $('fUser'), cur = s.value, ids = uids({ uid: '' }).sort((a, b) => label(a).localeCompare(label(b)));
+  const h = '<option value="">All users</option>' + ids.map(u => '<option value="' + esc(u) + '">' + esc(label(u)) + '</option>').join('');
+  if (s.dataset.h !== h) { s.innerHTML = h; s.dataset.h = h; s.value = cur }
+}
+
+// ---------- print ----------
+function printDoc(title, body) {
+  const f = F();
+  $('printArea').innerHTML = '<div class="ph"><h2>RABTECH · ' + esc(title) + '</h2><p>Account: <b>' + esc(f.uid ? label(f.uid) : 'All users') + '</b> · Period: <b>' + esc(f.from || f.to ? (f.from ? fmtDay(f.from) : 'start') + ' → ' + (f.to ? fmtDay(f.to) : 'today') : 'All time') + '</b>' + (f.q ? ' · Search: <b>' + esc(f.q) + '</b>' : '') + '</p><p>Generated ' + esc(fmt(Date.now())) + ' (Philippine time).</p></div>' + body;
+  window.print();
+}
+window.addEventListener('afterprint', () => $('printArea').innerHTML = '');
+function printRecord(full) {
+  const f = F(), S = stats(f), ks = full ? ['h', 'n', 'p'] : [SUBK[sub]], T = full ? null : tableRows(f, S); let out = '';
+  for (const u of uids(f)) {
+    let s = ''; for (const k of ks) { const r = (full ? S[k].slice().sort(cmp) : T).filter(x => x.uid === u); if (r.length) s += '<h4>' + C[k].n + ' (' + r.length + ')</h4>' + tbl(C[k].heads, r.map(C[k].row)) }
+    if (s) out += '<section class="pu"><h3>' + esc(label(u)) + '</h3><p class="subtle">UID ' + esc(u) + '</p>' + s + '</section>';
+  }
+  printDoc(full ? 'Full user record' : C[SUBK[sub]].n, out || '<p>No records match the current filters.</p>');
+}
+function printReport() {
+  const f = F(), S = stats(f); let out = '';
+  for (const u of uids(f)) {
+    const g = k => S[k].filter(x => x.uid === u); if (!g('h').length && !g('n').length && !g('p').length) continue;
+    const m = dailyMap(g('h'), g('n'), g('p'));
+    out += '<section class="pu"><h3>' + esc(label(u)) + '</h3><p class="subtle">UID ' + esc(u) + ' · ' + g('h').length + ' feeding events · ' + g('n').length + ' notifications · ' + g('p').length + ' pellet readings</p>' + svgPellets(g('p')) + '<h4>Daily log</h4><table><thead><tr>' + DH.map(x => '<th>' + x + '</th>').join('') + '</tr></thead><tbody>' + dailyRows(m, false) + '</tbody></table></section>';
+  }
+  printDoc('Report', out || '<p>No records match the current filters.</p>');
+}
+function printTab() {
+  if (activeTab === 'history') return printRecord(false);
+  if (activeTab === 'overview' || activeTab === 'reports') return printReport();
+  const sec = document.querySelector('[data-page="' + activeTab + '"] .panel'); printDoc($('pageHeading').textContent, sec ? sec.innerHTML : '');
+}
+
+// ---------- navigation / filters ----------
+const HEAD = { overview: ['Admin overview', 'Monitor your feeder and each user\'s saved data.'], users: ['Registered users', 'Accounts and how much data each one has saved.'], activity: ['User activity', 'Actions reported by the website.'], device: ['Device monitoring', 'Live readings and connection health.'], schedules: ['Feeding schedules', 'Current schedule configuration.'], history: ['User data', 'Every saved record per user: feeding history, notifications and pellet readings.'], reports: ['User reports', 'Daily totals, pellet level trend and per-user summary.'], settings: ['Admin settings', 'Account and access information.'] };
+function showTab(t) {
+  activeTab = t; document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === t)); document.querySelectorAll('[data-page]').forEach(s => s.classList.toggle('hidden', s.dataset.page !== t));
+  $('pageTitle').textContent = HEAD[t][0]; $('pageHeading').textContent = HEAD[t][0]; $('pageIntro').textContent = HEAD[t][1];
+  $('adminFilterBar').classList.toggle('hidden', ['device', 'schedules', 'settings'].includes(t)); pg = {}; render();
+}
+const OPT = { history: [['Type', [['servo', 'Servo'], ['fan', 'Fan'], ['sensor', 'Sensor']]], ['Action', [['opened', 'Hatch opened'], ['closed', 'Hatch closed'], ['fan on', 'Fan on'], ['fan off', 'Fan off'], ['refilled', 'Refilled']]]], notifications: [['Category', [['servo', 'Servo'], ['fan', 'Fan'], ['sensor', 'Sensor']]], ['Level', [['alert', 'Alerts'], ['info', 'Info']]]], pellets: [['Pellet level', [['0-0', 'Empty (0%)'], ['1-20', '1–20%'], ['21-50', '21–50%'], ['51-100', '51–100%']]], null] };
+function setupSelects() { OPT[sub].forEach((o, i) => { const s = $(i ? 'udExtra' : 'udType'); s.classList.toggle('hidden', !o); s.value = ''; if (o) s.innerHTML = '<option value="">' + o[0] + ': all</option>' + o[1].map(([v, l]) => '<option value="' + v + '">' + l + '</option>').join('') }) }
+function resetFilters() { $('fUser').value = ''; $('fSearch').value = ''; $('fFrom').value = DEFAULT_FROM; $('fTo').value = today(); $('userSearch').value = ''; $('activitySearch').value = ''; $('actionFilter').value = ''; setupSelects(); pg = {}; schedule() }
+document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+for (const id of ['fUser', 'fFrom', 'fTo', 'udType', 'udExtra', 'actionFilter']) $(id).onchange = () => { pg = {}; schedule() };
+for (const id of ['fSearch', 'userSearch', 'activitySearch']) $(id).oninput = () => { clearTimeout(qTimer); qTimer = setTimeout(() => { pg = {}; schedule() }, 200) };
+$('fPrint').onclick = printTab; $('printTable').onclick = () => printRecord(false); $('printFull').onclick = () => printRecord(true);
+$('subTabs').onclick = e => { const b = e.target.closest('[data-sub]'); if (b) { sub = b.dataset.sub; pg = {}; setupSelects(); render() } };
+$('sortBtn').onclick = () => { sortAsc = !sortAsc; pg = {}; render() };
+$('reloadUserData').onclick = () => { uids(F()).forEach(fetchUser); notify('Reloading user data…') };
+document.addEventListener('click', e => {
+  const p = e.target.closest('[data-pg]'); if (p) { const [n, d] = p.dataset.pg.split(':'); pg[n] = (pg[n] || 0) + Number(d); return render() }
+  const u = e.target.closest('[data-uid]'); if (u) { $('fUser').value = u.dataset.uid; return showTab('history') }
+  const d = e.target.closest('[data-day]'); if (d) { $('fFrom').value = $('fTo').value = d.dataset.day; pg = {}; d.tagName === 'TR' ? showTab('history') : render() }
+});
+$('exportHistory').onclick = () => { const f = F(), k = SUBK[sub]; csv([['Date & time (PH)', 'User', 'UID', ...CSVH[k]], ...tableRows(f).map(x => [fmt(x.ts), label(x.uid), x.uid, ...CSVR[k](x)])], 'rabtech-' + sub + '.csv') };
+$('exportReport').onclick = () => { const S = stats(F()); csv([DH, ...Object.keys(S.m).sort().map(d => { const r = S.m[d]; return [d, r.e, r.feed, r.fan, r.ref, r.alert, r.pn, r.pn ? Math.round(r.psum / r.pn) : '', r.pn ? r.pmin : ''] })], 'rabtech-daily-log.csv') };
+$('exportUsers').onclick = () => { const f = F(), S = stats({ ...f, q: '' }); csv([['Email', 'UID', 'Verified', 'First seen', 'Last login', 'Feeding events', 'Alerts', 'Pellet readings'], ...uids(f).map(u => [users[u]?.email || '', u, !!users[u]?.emailVerified, fmt(firstSeen(u)), fmt(users[u]?.lastLogin), S.h.filter(x => x.uid === u).length, S.n.filter(x => x.uid === u && x.warn).length, S.p.filter(x => x.uid === u).length])], 'rabtech-users.csv') };
+$('exportActivity').onclick = () => csv([['Time', 'Email', 'UID', 'Action', 'Details'], ...actEvents(F()).map(e => [fmt(e.timestamp), e.email, e.uid, e.action, e.details])], 'rabtech-activity.csv');
+$('refreshStatus').onclick = async () => { try { status = (await db.ref('/rabtech/status').once('value')).val() || {}; render(); notify('Status refreshed') } catch (e) { error(e.message) } };
+$('openDashboard').onclick = () => window.open('index.html', '_blank', 'noopener');
+setInterval(() => { if (!$('shell').classList.contains('hidden')) renderStatus() }, 5000);
+setInterval(() => { const f = F(); if (!$('shell').classList.contains('hidden') && f.uid) fetchUser(f.uid) }, 60000);
+
+// ---------- authentication (unchanged behaviour) ----------
+$('reveal').onclick = () => { const i = $('password'), b = $('reveal'), show = i.type === 'password'; i.type = show ? 'text' : 'password'; b.textContent = show ? 'Hide' : 'Show'; b.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); b.setAttribute('aria-pressed', String(show)) };
+$('loginForm').onsubmit = async e => {
+  e.preventDefault(); $('loginError').classList.add('hidden'); $('loginBtn').disabled = true;
+  try { await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION); const c = await auth.signInWithEmailAndPassword($('email').value.trim(), $('password').value); await c.user.reload(); if (!c.user.emailVerified) throw Error('Verify your email before signing in.'); if (c.user.uid !== ADMIN_UID) throw Error('This account does not have administrator access.'); $('password').value = '' }
+  catch (err) { await auth.signOut(); $('loginError').textContent = err.message; $('loginError').classList.remove('hidden') } finally { $('loginBtn').disabled = false }
+};
+function stop() { unsubs.forEach(fn => fn()); unsubs = []; users = {}; events = []; status = {}; schedules = {}; userData = {}; load = {}; cache = {}; clearError() }
+$('signout').onclick = () => auth.signOut();
+function watch(path, cb) { const r = db.ref(path), on = s => { cb(s.val() || {}); schedule(); clearError() }, fail = e => error('Unable to read ' + path + ': ' + e.message); r.on('value', on, fail); unsubs.push(() => r.off('value', on)) }
+function startListeners() {
+  fetchAll();
+  watch('/rabtech/users', v => { users = v; fetchAll() }); watch('/rabtech/status', v => status = v); watch('/rabtech/schedules', v => schedules = v);
+  watch('/rabtech/activity', v => events = Object.entries(v).map(([id, x]) => ({ id, ...x })).sort((a, b) => Number(b.timestamp) - Number(a.timestamp)));
+}
+auth.onAuthStateChanged(async u => {
+  const token = ++session; stop();
+  if (!u) { $('login').classList.remove('hidden'); $('shell').classList.add('hidden'); return }
+  try {
+    await u.reload(); if (token !== session) return;
+    if (!u.emailVerified || u.uid !== ADMIN_UID) { await auth.signOut(); return }
+    const s = await db.ref('/rabtech/users').once('value'); if (token !== session) return;
+    users = s.val() || {}; $('adminEmail').textContent = u.email; $('myUid').textContent = u.uid; $('login').classList.add('hidden'); $('shell').classList.remove('hidden');
+    resetFilters(); showTab('overview'); startListeners();
+  } catch (e) { if (token !== session) return; await auth.signOut(); $('loginError').textContent = 'Unable to authorize admin access: ' + e.message; $('loginError').classList.remove('hidden') }
+});
+
+    </script>
+</body>
+
+</html>
