@@ -537,20 +537,20 @@
 .print-header{display:none}
 @media(max-width:900px){.admin-charts{grid-template-columns:1fr}.admin-filter label{min-width:145px}}
 @media(max-width:520px){.admin-filter{display:grid;grid-template-columns:1fr 1fr}.admin-filter label{min-width:0}.admin-filter .filter-search{grid-column:1/-1}.admin-filter .btn{width:100%}}
-@media print{
-@page{size:A4 landscape;margin:12mm}
-body{background:white;color:#111;font-size:11px}
-.sidebar,.topbar,.admin-filter,.nav,.tools,.footer,#toast,.btn,.filter-note{display:none!important}.userlink{border:0;background:none;color:#111;text-decoration:none;padding:0;font-weight:600}
-.shell{display:block}.content{max-width:none;padding:0}.main{display:block}
-.content>.eyebrow,.content>#pageHeading,.content>#pageIntro{display:none}
-.print-header{display:block;margin-bottom:15px;border-bottom:2px solid #194b38;padding-bottom:10px}
-[data-page]{display:none!important}[data-page].print-target{display:block!important}
-.card,.panel{box-shadow:none;break-inside:avoid;border:1px solid #ddd;padding:12px}
-.panels,.admin-charts{grid-template-columns:1fr 1fr}
-.tablewrap{overflow:visible}table{min-width:0;width:100%;font-size:10px}td,th{padding:6px 4px;word-break:break-word}
-.chart-bars{height:120px}.barfill,.chart-bar .fill{print-color-adjust:exact;-webkit-print-color-adjust:exact}
-}
-    </style>
+
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;background:#edf1ea;color:#5d7367;white-space:nowrap}
+.pill.servo,.pill.real{background:#e3f1e7;color:#257c4b}.pill.fan{background:#e1eef3;color:#2d6a82}.pill.sensor{background:#fbf0d9;color:#8a6618}.pill.alert{background:#fff0e7;color:#98553c}.pill.demo{background:#f1efe4;color:#7b7a58}
+.seg{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.seg button{border:1px solid var(--line);background:#fff;color:var(--green);padding:10px 16px;border-radius:12px;font-weight:700}.seg button.active{background:var(--green);color:#fff}
+.pager{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:16px;color:var(--muted)}
+.lvl{display:inline-block;vertical-align:middle;width:90px;height:9px;background:#e9f0e9;border-radius:9px;overflow:hidden;margin-right:8px}.lvl i{display:block;height:100%;background:var(--green2)}
+.chart-bars{overflow-x:auto}.chart-bar{min-width:16px}tr[data-day]:hover{background:#f4f8f2}
+#printArea{display:none}
+@media print{@page{size:A4;margin:12mm}body{background:#fff;color:#111;font-size:10px}.shell,#login,#toast{display:none!important}#printArea{display:block}
+.ph{border-bottom:2px solid #194b38;margin-bottom:12px;padding-bottom:8px}.ph p,#printArea p{margin:3px 0;line-height:1.4}.pu+.pu{break-before:page}
+#printArea table{min-width:0;font-size:9px}#printArea th,#printArea td{padding:4px 5px}tr{break-inside:avoid}thead{display:table-header-group}
+#printArea .tools,#printArea input,#printArea select,#printArea .btn,#printArea .pager{display:none}
+.pill{background:#fff!important;color:#111!important;border:1px solid #bbb;padding:1px 6px}.lvl{border:1px solid #999}.lvl i{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style>
 </head>
 
 <body>
@@ -589,14 +589,12 @@ body{background:white;color:#111;font-size:11px}
                 <p id="pageIntro" class="intro">Monitor your feeder and account activity.</p>
                 <div id="systemError" class="alert hidden"></div>
                 <div class="admin-filter" id="adminFilterBar">
-                    <label>User account<select class="field" id="globalUser"><option value="">All recorded users</option></select></label>
-                    <label class="filter-search">Search records<input class="field" id="globalSearch" placeholder="Email, UID, action, details..." type="search"></label>
-                    <label>From date<input class="field" id="globalFrom" type="date"></label>
-                    <label>To date<input class="field" id="globalTo" type="date"></label>
-                    <button class="btn secondary" id="resetFilters" type="button">Reset</button>
-                    <button class="btn" id="printFiltered" type="button">Print filtered view</button>
+                    <label>User account<select class="field" id="fUser"><option value="">All users</option></select></label>
+                    <label class="filter-search">Search records<input class="field" id="fSearch" type="search" placeholder="Event, message, email, UID..."></label>
+                    <label>From date<input class="field" id="fFrom" type="date"></label>
+                    <label>To date<input class="field" id="fTo" type="date"></label>
+                    <button class="btn" id="fPrint" type="button">Print</button>
                 </div>
-                <div class="print-header" id="printHeader"></div>
                 <p class="filter-note" id="filterSummary">Showing recorded data. Shared device telemetry is not user-specific.</p>
 
                 <section data-page="overview">
@@ -604,8 +602,8 @@ body{background:white;color:#111;font-size:11px}
                         <div class="card"><small>Known users</small>
                             <div id="metricUsers" class="metric">—</div><small>Profiles recorded by this app</small>
                         </div>
-                        <div class="card"><small>Activity events</small>
-                            <div id="metricEvents" class="metric">—</div><small>Client-reported actions</small>
+                        <div class="card"><small>Feeding events</small>
+                            <div id="metricEvents" class="metric">—</div><small>Feeding events in selected range</small>
                         </div>
                         <div class="card"><small>Feeder status</small>
                             <div id="metricOnline" class="metric">Offline</div><small>Heartbeat based</small>
@@ -617,8 +615,8 @@ body{background:white;color:#111;font-size:11px}
                     </div>
 
                     <div class="admin-charts">
-                        <div class="panel"><h3>Recorded actions by day</h3><div class="chart-bars" id="overviewDaily"></div><p class="chart-caption">Select a bar to filter to that day. Counts reflect client-reported events.</p></div>
-                        <div class="panel"><h3>Action breakdown</h3><div id="overviewActions" class="reportbars"></div><p class="chart-caption">Based on available account activity records, not verified device actuation.</p></div>
+                        <div class="panel"><h3>Feeding events by day</h3><div class="chart-bars" id="overviewDaily"></div><p class="chart-caption">Click a bar to filter to that day.</p></div>
+                        <div class="panel"><h3>Event breakdown</h3><div id="overviewActions" class="reportbars"></div><p class="chart-caption">Based on saved feeding history.</p></div>
                     </div>
                     <div class="panels">
                         <div class="panel">
@@ -654,7 +652,7 @@ body{background:white;color:#111;font-size:11px}
                                         <th>Verified</th>
                                         <th>First seen</th>
                                         <th>Last login</th>
-                                        <th>Recorded actions</th>
+                                        <th>Feeding events</th><th>Alerts</th><th>Pellet readings</th><th></th>
                                     </tr>
                                 </thead>
                                 <tbody id="usersBody"></tbody>
@@ -712,31 +710,19 @@ body{background:white;color:#111;font-size:11px}
                     </div>
                 </section>
                 <section data-page="reports" class="hidden">
-                    <div class="panel">
-                        <h3>Reports by user</h3>
-                        <p class="intro">Select a registered account to inspect its saved feeding history, activity, notifications, and pellet container names. Live device telemetry is shared and is not attributed to a specific user.</p>
-                        <div class="tools">
-                            <select id="reportUser" class="field" aria-label="Select user for report"><option value="">Select user</option></select>
-                            <select id="reportPeriod" class="field" aria-label="Report period">
-                                <option value="all">All time</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option>
-                            </select>
-                            <button id="exportReport" class="btn secondary">Export report CSV</button>
-                        </div>
-                        <div id="reportIdentity" class="subtle">Select a user to see their report.</div>
-                        <div id="reportMetrics" class="reportgrid"></div>
-                        <h3>Feeding activity by day</h3>
-                        <div id="reportBars" class="reportbars"><p class="subtle">No user selected.</p></div>
-                    </div>
+                    <div class="panel"><h3>Report summary</h3><div id="reportMetrics" class="reportgrid"></div><div class="tools"><button class="btn secondary" id="exportReport">Export daily log CSV</button></div></div>
                     <div class="panels" style="margin-top:18px">
-                        <div class="panel"><h3>Pellet containers</h3><div id="reportHatches" class="statusgrid"></div></div>
-                        <div class="panel"><h3>Saved notifications</h3><div id="reportNotifications"></div></div>
+                        <div class="panel"><h3>Pellet level over time</h3><div id="reportPellets"></div></div>
+                        <div class="panel"><h3>Per-user totals</h3><div class="tablewrap"><table><thead><tr><th>User</th><th>Events</th><th>Alerts</th><th>Readings</th><th>Last record</th></tr></thead><tbody id="reportUsersBody"></tbody></table></div></div>
                     </div>
-                    <div class="panel" style="margin-top:18px">
-                        <h3>User activity and feeding history</h3>
-                        <div class="tablewrap"><table><thead><tr><th>Time</th><th>Source</th><th>Action / Event</th><th>Details</th></tr></thead><tbody id="reportBody"></tbody></table></div>
-                    </div>
+                    <div class="panel" style="margin-top:18px"><h3>Daily log</h3><p class="intro">Totals per day (Philippine time). Click a day to open its records.</p><div class="tablewrap"><table><thead><tr><th>Date</th><th>Events</th><th>Feedings</th><th>Fan on</th><th>Refills</th><th>Alerts</th><th>Readings</th><th>Avg level</th><th>Lowest</th></tr></thead><tbody id="reportBody"></tbody></table></div></div>
                 </section>
-                <section data-page="history" class="hidden"><div class="panel"><h3>Saved data by user</h3><p class="intro">Per-user dashboard history and notifications. Shared ESP32 schedules and device status remain separate.</p><div class="tools"><select id="historyUser" class="field" aria-label="Select user"><option value="">Select user</option></select><button id="exportHistory" class="btn secondary">Export selected history CSV</button></div><div id="historySummary" class="intro">Select a user to view saved records.</div><div class="tools"><button type="button" class="btn secondary" id="reloadUserData">Reload selected user data</button><span id="userDataDiagnostic" class="subtle" role="status">Waiting for account selection</span></div><h3 style="margin:18px 0 8px">Saved events</h3><div class="tablewrap"><table><thead><tr><th>Time</th><th>Type</th><th>Event</th><th>Source</th></tr></thead><tbody id="historyBody"></tbody></table></div><h3 style="margin:20px 0 8px">Notifications</h3><div class="tablewrap"><table><thead><tr><th>Time</th><th>Title</th><th>Message</th><th>Category</th></tr></thead><tbody id="historyNotificationsBody"></tbody></table></div></div></section><section data-page="settings" class="hidden">
+                <section data-page="history" class="hidden"><div class="panel"><h3>Saved data by user</h3><p class="intro" id="historySummary"></p>
+                    <div class="seg" id="subTabs"><button data-sub="history" class="active">Feeding history</button><button data-sub="notifications">Notifications</button><button data-sub="pellets">Pellet readings</button></div>
+                    <div class="tools"><select class="field" id="udType"></select><select class="field" id="udExtra"></select><button class="btn secondary" id="sortBtn" type="button">Newest first</button><button class="btn secondary" id="exportHistory" type="button">Export CSV</button><button class="btn secondary" id="printTable" type="button">Print table</button><button class="btn secondary" id="printFull" type="button">Print full record</button><button class="btn secondary" id="reloadUserData" type="button">Reload</button></div>
+                    <p id="userDataDiagnostic" class="subtle" role="status"></p>
+                    <div class="tablewrap"><table><thead id="udHead"></thead><tbody id="udBody"></tbody></table></div><div id="udPager"></div></div></section>
+                <section data-page="settings" class="hidden">
                     <div class="panel">
                         <h3>Administration and security</h3>
                         <p>Administrator access is restricted by the signed-in account UID in the database security
@@ -753,252 +739,271 @@ body{background:white;color:#111;font-size:11px}
             </main>
         </div>
     </div>
+    <div id="printArea"></div>
     <div id="toast" role="status"></div>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
     <script>
-        'use strict';
-        firebase.initializeApp({ apiKey: "AIzaSyBf9E8ToQKG0qKPWkLM9S0qzGNUP3ZMVCE", authDomain: "rabtech-80cc2.firebaseapp.com", databaseURL: "https://rabtech-80cc2-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "rabtech-80cc2", storageBucket: "rabtech-80cc2.firebasestorage.app", messagingSenderId: "225089463180", appId: "1:225089463180:web:b6916e1b252bda16d4eca9" });
-        const auth = firebase.auth(), db = firebase.database();
-        const ADMIN_UID = 'JaGyQpaiOzPe2LQmxF0lza8dJrt1';
-        const $ = id => document.getElementById(id);
-        let users = {}, events = [], status = {}, schedules = {}, userData = {}, activeTab = 'overview', unsubs = [], session = 0, toastTimer;
-        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-        const fmt = t => Number(t) > 0 ? new Date(Number(t)).toLocaleString() : '—';
-        function notify(s) { $('toast').textContent = s; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').textContent = '', 3500) }
-        function error(s) { $('systemError').textContent = s; $('systemError').classList.remove('hidden') }
-        function clearError() { $('systemError').classList.add('hidden') }
-        function online() { const n = Number(status.lastSeen); const age = Date.now() - n; return n > 0 && age >= -15000 && age < 90000 && status.online !== false }
-        function csv(rows, filename) { const content = rows.map(row => row.map(v => '"' + String(v ?? '').replaceAll('"', '""') + '"').join(',')).join('\r\n'); const blob = new Blob(['﻿', content], { type: 'text/csv;charset=utf-8' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000) }
-        function showTab(t) { activeTab = t; document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === t)); document.querySelectorAll('[data-page]').forEach(s => s.classList.toggle('hidden', s.dataset.page !== t)); const headings = { overview: ['Admin overview', 'Monitor your feeder and account activity.'], users: ['Registered users', 'Accounts observed by the RABTECH application.'], activity: ['User activity', 'Review recorded actions across your shared feeder.'], device: ['Device monitoring', 'Live readings and connection health.'], schedules: ['Feeding schedules', 'Current schedule configuration.'], history: ['User data', 'Saved history and notifications by account.'], reports: ['User reports', 'Account-specific feeding history, activity and saved settings.'], settings: ['Admin settings', 'Account and access information.'] }; $('pageTitle').textContent = t[0].toUpperCase() + t.slice(1); $('pageHeading').textContent = headings[t][0]; $('pageIntro').textContent = headings[t][1]; render() }
-        document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
-        $('reveal').onclick = () => { const input = $('password'), button = $('reveal'); const show = input.type === 'password'; input.type = show ? 'text' : 'password'; button.textContent = show ? 'Hide' : 'Show'; button.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); button.setAttribute('aria-pressed', String(show)); };
-        $('loginForm').onsubmit = async e => { e.preventDefault(); $('loginError').classList.add('hidden'); $('loginBtn').disabled = true; try { await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION); const c = await auth.signInWithEmailAndPassword($('email').value.trim(), $('password').value); await c.user.reload(); if (!c.user.emailVerified) throw Error('Verify your email before signing in.'); if (c.user.uid !== ADMIN_UID) throw Error('This account does not have administrator access.'); $('password').value = ''; } catch (err) { await auth.signOut(); $('loginError').textContent = err.message; $('loginError').classList.remove('hidden') } finally { $('loginBtn').disabled = false } };
-        function stop() { unsubs.forEach(fn => fn()); unsubs = []; users = {}; events = []; status = {}; schedules = {}; userData = {}; clearError() }
-        $('signout').onclick = () => auth.signOut();
-        auth.onAuthStateChanged(async u => { const token = ++session; stop(); if (!u) { $('login').classList.remove('hidden'); $('shell').classList.add('hidden'); return } try { await u.reload(); if (token !== session) return; if (!u.emailVerified || u.uid !== ADMIN_UID) { await auth.signOut(); return } const s = await db.ref('/rabtech/users').once('value'); if (token !== session) return; users = s.val() || {}; $('adminEmail').textContent = u.email; $('myUid').textContent = u.uid; $('login').classList.add('hidden'); $('shell').classList.remove('hidden'); startListeners(); render() } catch (e) { if (token !== session) return; await auth.signOut(); $('loginError').textContent = 'Unable to authorize admin access: ' + e.message; $('loginError').classList.remove('hidden') } });
-        function watch(path, cb) { const r = db.ref(path); const on = s => { cb(s.val() || {}); render(); clearError() }; const fail = e => error('Unable to read ' + path + ': ' + e.message); r.on('value', on, fail); unsubs.push(() => r.off('value', on)) }
-        function startListeners() { watch('/rabtech/users', v => users = v); watch('/rabtech/status', v => status = v); watch('/rabtech/schedules', v => schedules = v); watch('/rabtech/userData', v => userData = v); watch('/rabtech/activity', v => events = Object.entries(v).map(([id, x]) => ({ id, ...x })).sort((a, b) => Number(b.timestamp) - Number(a.timestamp))) }
-        function render() { const isOn = online(); $('deviceBadge').textContent = isOn ? '● Online' : '● Offline'; $('deviceBadge').className = 'badge ' + (isOn ? 'on' : 'off'); $('metricUsers').textContent = Object.keys(users).length; $('metricEvents').textContent = events.length; $('metricOnline').textContent = isOn ? 'Online' : 'Offline'; $('metricSeen').textContent = status.lastSeen ? fmt(status.lastSeen) : 'Never'; for (const [id, key, suffix] of [['oL1', 'l1', '%'], ['oL2', 'l2', '%'], ['oL3', 'l3', '%'], ['oTemp', 'temp', '°C']]) $(id).textContent = status[key] == null || (key === 'temp' && status.tempValid === false) ? '—' : status[key] + suffix; $('oWater').textContent = status.waterReliable === false || status.waterValid === false || status.waterLevel == null ? '—' : status.waterLevel + '%'; $('oFan').textContent = status.fan === undefined ? '—' : status.fan ? 'On' : 'Off'; $('oResult').textContent = status.lastCommandResult || '—'; $('recentEvents').innerHTML = events.slice(0, 6).map(e => '<div style="padding:12px 0;border-bottom:1px solid var(--line)"><b>' + esc(e.action) + '</b><div class="detail">' + esc(e.email || e.uid) + ' · ' + esc(fmt(e.timestamp)) + '</div></div>').join('') || '<p class="intro">No activity recorded yet.</p>'; renderUsers(); renderActivity(); renderDevice(); renderSchedules(); renderUserHistory(); renderReports() }
-        function renderUsers() { const q = $('userSearch').value.toLowerCase(); const count = {}; events.forEach(e => count[e.uid] = (count[e.uid] || 0) + 1); const rows = Object.entries(users).filter(([uid, u]) => (uid + ' ' + (u.email || '')).toLowerCase().includes(q)).sort((a, b) => (b[1].lastLogin || 0) - (a[1].lastLogin || 0)); for (const selectId of ['historyUser','reportUser']) { const select = $(selectId); const selected = select.value; select.innerHTML = '<option value="">Select user</option>' + Object.entries(users).map(([id,u])=>'<option value="'+esc(id)+'"'+(selected===id?' selected':'')+'>'+esc(u.email||id)+'</option>').join(''); } $('usersBody').innerHTML = rows.map(([uid, u]) => '<tr><td><button class="userlink" data-report-uid="' + esc(uid) + '">' + esc(u.email || '—') + '</button></td><td class="detail">' + esc(uid) + '</td><td>' + esc(u.emailVerified ? 'Yes' : 'No') + '</td><td>' + esc(fmt(u.firstSeen)) + '</td><td>' + esc(fmt(u.lastLogin)) + '</td><td>' + esc(count[uid] || 0) + '</td></tr>').join('') || '<tr><td colspan="6">No matching user profiles.</td></tr>' }
-        function filteredEvents() { const q = $('activitySearch').value.toLowerCase(), a = $('actionFilter').value; return events.filter(e => (!a || e.action === a) && [e.uid, e.email, e.action, e.details].join(' ').toLowerCase().includes(q)) }
-        function renderActivity() { $('activityBody').innerHTML = filteredEvents().slice(0, 1000).map(e => '<tr><td>' + esc(fmt(e.timestamp)) + '</td><td>' + esc(e.email || e.uid) + '</td><td><b>' + esc(e.action) + '</b></td><td class="detail">' + esc(e.details || '—') + '</td></tr>').join('') || '<tr><td colspan="4">No matching events.</td></tr>' }
-        function renderDevice() { const data = { Connection: online() ? 'Online' : 'Offline', 'Last heartbeat': fmt(status.lastSeen), 'Heartbeat age': status.lastSeen ? Math.max(0, Math.round((Date.now() - Number(status.lastSeen)) / 1000)) + ' sec' : '—', 'Pellet 1': status.l1 ?? '—', 'Pellet 2': status.l2 ?? '—', 'Pellet 3': status.l3 ?? '—', 'Fan': status.fan ? 'On' : 'Off', 'Temperature (outdoor)': status.tempValid === false ? '—' : (status.temp == null ? '—' : status.temp + ' °C'), 'Water level': status.waterValid === false || status.waterReliable === false || status.waterLevel == null ? '—' : status.waterLevel + '%', 'Water distance': status.waterDistanceCm == null ? '—' : status.waterDistanceCm + ' cm', 'Hatch 1': String(status.hatch1 ?? '—'), 'Hatch 2': String(status.hatch2 ?? '—'), 'Hatch 3': String(status.hatch3 ?? '—'), 'Last command result': status.lastCommandResult || '—' }; $('deviceDetails').innerHTML = Object.entries(data).map(([k, v]) => '<div class="kv"><span>' + esc(k) + '</span><strong>' + esc(v) + '</strong></div>').join('') }
-        function renderSchedules() { $('scheduleDetails').innerHTML = [1, 2, 3].map(n => { const s = schedules['slot' + n]; const v = typeof s === 'string' ? s : s?.enabled ? s.time : 'Not set'; return '<div class="kv"><span>Slot ' + n + '</span><strong>' + esc(v || 'Not set') + '</strong></div>' }).join('') }
-        function selectedHistory(){const id=$('historyUser').value;return Object.values(userData[id]?.feedingHistory||{}).filter(x=>x&&typeof x==='object').sort((a,b)=>Number(b.timestamp)-Number(a.timestamp));}
-        function renderUserHistory(){const id=$('historyUser').value,records=selectedHistory(),n=Object.keys(userData[id]?.notifications||{}).length;$('historySummary').textContent=id?records.length+' saved events · '+n+' saved notifications':'Select a user to view saved records.';$('historyBody').innerHTML=records.slice(0,1000).map(x=>'<tr><td>'+esc(fmt(x.timestamp))+'</td><td>'+esc(x.type||'system')+'</td><td>'+esc(x.event||'—')+'</td><td>'+esc(x.demo?'Demo':'Recorded')+'</td></tr>').join('')||'<tr><td colspan="4">No saved history for this user.</td></tr>';}
-        // Per-user reports: only data actually saved for the selected account.
-        const reportTimestamp = x => Number(x?.timestamp ?? x?.createdAt ?? x?.time ?? 0);
-        function reportRange() { const d = Number($('reportPeriod').value); return d > 0 ? Date.now() - d*86400000 : 0; }
-        function reportData() {
-            const uid = $('reportUser').value, data = userData[uid] || {}, since = reportRange();
-            const history = Object.entries(data.feedingHistory || {}).filter(([,x]) => x && typeof x === 'object').map(([id,x]) => ({id, ...x, timestamp:reportTimestamp(x)})).filter(x => x.timestamp >= since);
-            const activity = events.filter(x => x.uid === uid && Number(x.timestamp) >= since);
-            const notifications = Object.entries(data.notifications || {}).filter(([,x]) => x && typeof x === 'object').map(([id,x]) => ({id,...x,timestamp:reportTimestamp(x)})).filter(x => x.timestamp >= since);
-            return {uid,data,history,activity,notifications};
-        }
-        function reportRows() {
-            const {history,activity} = reportData();
-            return [...history.map(x=>({timestamp:x.timestamp,source:'Feeding history',action:x.event||x.type||'Feeding event',details:x.demo?'Demo record':(x.details||'')})), ...activity.map(x=>({timestamp:Number(x.timestamp),source:'Account activity',action:x.action||'Action',details:x.details||''}))].sort((a,b)=>b.timestamp-a.timestamp);
-        }
-        function renderReports() {
-            const {uid,data,history,activity,notifications} = reportData();
-            if (!uid) { $('reportIdentity').textContent='Select a user to see their report.'; $('reportMetrics').innerHTML=''; $('reportBars').innerHTML='<p class="subtle">No user selected.</p>'; $('reportHatches').innerHTML=''; $('reportNotifications').innerHTML=''; $('reportBody').innerHTML='<tr><td colspan="4">Select a user.</td></tr>'; return; }
-            const u=users[uid]||{};
-            $('reportIdentity').textContent=(u.email||uid)+' · UID: '+uid+' · Last login: '+fmt(u.lastLogin);
-            const metrics=[['Saved feeding events',history.length],['Account actions',activity.length],['Notifications',notifications.length],['Last login',u.lastLogin?new Date(Number(u.lastLogin)).toLocaleDateString():'—']];
-            $('reportMetrics').innerHTML=metrics.map(([name,value])=>'<div class="reportmetric"><span>'+esc(name)+'</span><strong>'+esc(value)+'</strong></div>').join('');
-            const names=Array.isArray(data.hatchNames)?data.hatchNames:[];
-            $('reportHatches').innerHTML=[0,1,2].map(i=>'<div class="kv"><span>Hatch '+(i+1)+'</span><strong>'+esc(names[i]||'Hatch '+(i+1))+'</strong></div>').join('');
-            const byDay={};
-            history.forEach(x=>{if(x.timestamp>0){const day=new Date(x.timestamp).toLocaleDateString('en-CA');byDay[day]=(byDay[day]||0)+1;}});
-            const days=Object.keys(byDay).sort().slice(-14),max=Math.max(1,...Object.values(byDay));
-            $('reportBars').innerHTML=days.length?days.map(day=>'<div class="barrow"><span>'+esc(day)+'</span><div class="bartrack"><div class="barfill" style="width:'+Math.round(byDay[day]/max*100)+'%"></div></div><strong>'+byDay[day]+'</strong></div>').join(''):'<p class="subtle">No dated feeding records in this period.</p>';
-            $('reportNotifications').innerHTML=notifications.sort((a,b)=>b.timestamp-a.timestamp).slice(0,15).map(x=>'<div style="padding:10px 0;border-bottom:1px solid var(--line)"><b>'+esc(x.title||x.type||'Notification')+'</b><div class="detail">'+esc(x.message||x.text||x.event||'')+' · '+esc(fmt(x.timestamp))+'</div></div>').join('')||'<p class="subtle">No saved notifications for this period.</p>';
-            $('reportBody').innerHTML=reportRows().slice(0,1000).map(x=>'<tr><td>'+esc(fmt(x.timestamp))+'</td><td>'+esc(x.source)+'</td><td>'+esc(x.action)+'</td><td class="detail">'+esc(x.details)+'</td></tr>').join('')||'<tr><td colspan="4">No recorded events in this period.</td></tr>';
-        }
-        $('reportUser').onchange=renderReports;
-        $('reportPeriod').onchange=renderReports;
-        $('exportReport').onclick=()=>{if(!$('reportUser').value)return notify('Select a user first');const rows=reportRows();csv([['Time','Source','Action / Event','Details'],...rows.map(x=>[fmt(x.timestamp),x.source,x.action,x.details])],'rabtech-report-'+$('reportUser').value+'.csv')};
-        $('usersBody').addEventListener('click',e=>{const button=e.target.closest('[data-report-uid]');if(!button)return;$('reportUser').value=button.dataset.reportUid;showTab('reports')});
-        $('historyUser').onchange=renderUserHistory;
-        $('exportHistory').onclick=()=>{if(!$('historyUser').value)return notify('Select a user first');csv([['Time','Type','Event','Demo'],...selectedHistory().map(x=>[fmt(x.timestamp),x.type,x.event,!!x.demo])],'rabtech-user-history.csv')};
-        $('userSearch').oninput = renderUsers; $('activitySearch').oninput = renderActivity; $('actionFilter').onchange = renderActivity;
-        $('exportUsers').onclick = () => csv([['Email', 'UID', 'Verified', 'First seen', 'Last login'], ...Object.entries(users).map(([uid, u]) => [u.email, uid, u.emailVerified, fmt(u.firstSeen), fmt(u.lastLogin)])], 'rabtech-users.csv');
-        $('exportActivity').onclick = () => csv([['Time', 'Email', 'UID', 'Action', 'Details'], ...filteredEvents().map(e => [fmt(e.timestamp), e.email, e.uid, e.action, e.details])], 'rabtech-activity.csv');
-        $('refreshStatus').onclick = async () => { try { status = (await db.ref('/rabtech/status').once('value')).val() || {}; render(); notify('Status refreshed') } catch (e) { error(e.message) } };
-        $('openDashboard').onclick = () => window.open('index.html', '_blank', 'noopener'); setInterval(() => { if (!$('shell').classList.contains('hidden')) render() }, 5000);
+'use strict';
+firebase.initializeApp({ apiKey: "AIzaSyBf9E8ToQKG0qKPWkLM9S0qzGNUP3ZMVCE", authDomain: "rabtech-80cc2.firebaseapp.com", databaseURL: "https://rabtech-80cc2-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "rabtech-80cc2", storageBucket: "rabtech-80cc2.firebasestorage.app", messagingSenderId: "225089463180", appId: "1:225089463180:web:b6916e1b252bda16d4eca9" });
+const auth = firebase.auth(), db = firebase.database();
+const ADMIN_UID = 'JaGyQpaiOzPe2LQmxF0lza8dJrt1', PINNED = ['P62OJJKY45hpVlyDeXHUgE12nOv1'], DEFAULT_FROM = '2026-09-07', TZ = 'Asia/Manila', PAGE = 100;
+let users = {}, events = [], status = {}, schedules = {}, userData = {}, load = {}, cache = {}, pg = {}, unsubs = [], session = 0, activeTab = 'overview', sub = 'history', sortAsc = false, toastTimer, raf, qTimer;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const intl = o => new Intl.DateTimeFormat('en-US', { timeZone: TZ, ...o });
+const toMs = v => { let n = Number(v); if (n > 0 && n < 1e12) n *= 1000; return n > 9.4e11 && n < Date.now() + 864e5 ? n : 0 };
+const dayKey = ms => { const p = {}; intl({ year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(ms).forEach(x => p[x.type] = x.value); return p.year + '-' + p.month + '-' + p.day };
+const fmt = t => { const n = toMs(t); return n ? intl({ month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit' }).format(n) : '—' };
+const fmtDay = k => intl({ month: 'short', day: 'numeric', year: 'numeric' }).format(Date.parse(k + 'T12:00:00+08:00'));
+const dayStart = k => Date.parse(k + 'T00:00:00+08:00'), dayEnd = k => Date.parse(k + 'T23:59:59.999+08:00'), today = () => dayKey(Date.now());
+const schedule = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(render) };
+function notify(s) { $('toast').textContent = s; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').textContent = '', 3500) }
+function error(s) { $('systemError').textContent = s; $('systemError').classList.remove('hidden') }
+function clearError() { $('systemError').classList.add('hidden') }
+function online() { const n = Number(status.lastSeen), age = Date.now() - n; return n > 0 && age >= -15000 && age < 90000 && status.online !== false }
+function csv(rows, name) { const c = rows.map(r => r.map(v => { v = String(v ?? ''); if (/^[=+@]/.test(v)) v = "'" + v; return '"' + v.replaceAll('"', '""') + '"' }).join(',')).join('\r\n'); const url = URL.createObjectURL(new Blob(['\ufeff', c], { type: 'text/csv;charset=utf-8' })); const a = document.createElement('a'); a.href = url; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000) }
 
-        // ========= FILTERED ANALYTICS EXTENSION =========
-        const g = id => document.getElementById(id);
-        const validMs = v => { const n=Number(v); return Number.isFinite(n) && n>946684800000 && n<Date.now()+86400000 ? n : 0; };
-        const dateISO = ms => { const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Manila',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(ms));const get=k=>parts.find(p=>p.type===k)?.value||'';return get('year')+'-'+get('month')+'-'+get('day'); };
-        function dateAllowed(ms){
-            const n=validMs(ms),from=g('globalFrom').value,to=g('globalTo').value;
-            if(!from&&!to)return true;
-            if(!n)return false;
-            const d=dateISO(n);return (!from||d>=from)&&(!to||d<=to);
-        }
-        const selectedUid=()=>g('globalUser').value;
-        const query=()=>g('globalSearch').value.trim().toLowerCase();
-        const matchesText=(...values)=>!query()||values.map(v=>String(v??'')).join(' ').toLowerCase().includes(query());
-        function filteredUserEntries(){return Object.entries(users).filter(([uid,u])=>
-            (!selectedUid()||uid===selectedUid()) && matchesText(uid,u.email,u.displayName) &&
-            dateAllowed(u.lastLogin||u.firstSeen));}
-        function filteredAccountEvents(){return events.filter(e=>(!selectedUid()||e.uid===selectedUid())&&dateAllowed(e.timestamp)&&matchesText(e.uid,e.email,e.action,e.details));}
-        function filterHistoryEntries(uid){
-            return Object.entries(userData[uid]?.feedingHistory||{}).filter(([,x])=>x&&typeof x==='object')
-              .map(([id,x])=>({id,...x,timestamp:validMs(reportTimestamp(x))}))
-              .filter(x=>dateAllowed(x.timestamp)&&matchesText(x.event,x.type,x.details,uid,users[uid]?.email))
-              .sort((a,b)=>b.timestamp-a.timestamp);
-        }
-        function filterNotifications(uid){return Object.entries(userData[uid]?.notifications||{}).filter(([,x])=>x&&typeof x==='object')
-          .map(([id,x])=>({id,...x,timestamp:validMs(reportTimestamp(x))}))
-          .filter(x=>dateAllowed(x.timestamp)&&matchesText(x.title,x.type,x.message,x.text,uid,users[uid]?.email))
-          .sort((a,b)=>b.timestamp-a.timestamp);}
-        function syncUserSelect(){
-          const options='<option value="">All recorded users</option>'+Object.entries(users).sort((a,b)=>String(a[1]?.email||a[0]).localeCompare(String(b[1]?.email||b[0])))
-            .map(([id,u])=>'<option value="'+esc(id)+'">'+esc(u?.email||id)+'</option>').join('');
-          const select=g('globalUser'),current=select.value;
-          if(select.dataset.options!==options){select.innerHTML=options;select.dataset.options=options;select.value=current;}
-          if(current&&!users[current])select.value='';
-          for(const id of ['reportUser','historyUser']){
-            const el=g(id); if(selectedUid()&&el.value!==selectedUid())el.value=selectedUid();
-          }
-        }
-        // Replace legacy list rendering so search, user, and date filters also affect exports.
-        renderUsers=function(){
-          syncUserSelect();const local=g('userSearch').value.toLowerCase();const counts={};
-          filteredAccountEvents().forEach(e=>counts[e.uid]=(counts[e.uid]||0)+1);
-          const rows=filteredUserEntries().filter(([uid,u])=>(uid+' '+(u.email||'')).toLowerCase().includes(local))
-            .sort((a,b)=>Number(b[1].lastLogin||0)-Number(a[1].lastLogin||0));
-          for(const id of ['historyUser','reportUser']){
-            const select=g(id),current=select.value;
-            select.innerHTML='<option value="">Select user</option>'+Object.entries(users).map(([uid,u])=>'<option value="'+esc(uid)+'">'+esc(u.email||uid)+'</option>').join('');
-            select.value=selectedUid()||current;
-          }
-          g('usersBody').innerHTML=rows.map(([uid,u])=>'<tr><td><button class="userlink" data-report-uid="'+esc(uid)+'">'+esc(u.email||'—')+'</button></td><td class="detail">'+esc(uid)+'</td><td>'+esc(u.emailVerified?'Yes':'No')+'</td><td>'+esc(fmt(u.firstSeen))+'</td><td>'+esc(fmt(u.lastLogin))+'</td><td>'+esc(counts[uid]||0)+'</td></tr>').join('')||'<tr><td colspan="6">No matching profiles.</td></tr>';
-        };
-        filteredEvents=function(){const local=g('activitySearch').value.toLowerCase(),a=g('actionFilter').value;
-          return filteredAccountEvents().filter(e=>(!a||e.action===a)&&[e.uid,e.email,e.action,e.details].join(' ').toLowerCase().includes(local));};
-        renderActivity=function(){g('activityBody').innerHTML=filteredEvents().map(e=>'<tr><td>'+esc(fmt(e.timestamp))+'</td><td>'+esc(e.email||e.uid)+'</td><td><b>'+esc(e.action)+'</b></td><td class="detail">'+esc(e.details||'—')+'</td></tr>').join('')||'<tr><td colspan="4">No matching events.</td></tr>';};
-        selectedHistory=function(){const uid=g('historyUser').value||selectedUid();return uid?filterHistoryEntries(uid):[];};
-        renderUserHistory=function(){const uid=g('historyUser').value||selectedUid(),records=selectedHistory(),n=uid?filterNotifications(uid).length:0;
-          g('historySummary').textContent=uid?records.length+' matching saved events · '+n+' matching notifications':'Select a user to view saved records.';
-          g('historyBody').innerHTML=records.map(x=>'<tr><td>'+esc(fmt(x.timestamp))+'</td><td>'+esc(x.type||'system')+'</td><td>'+esc(x.event||'—')+'</td><td>'+esc(x.demo?'Demo':'Recorded')+'</td></tr>').join('')||'<tr><td colspan="4">No matching history.</td></tr>';
-        };
-        const oldReportData=reportData;
-        reportData=function(){
-          const uid=g('reportUser').value||selectedUid();if(!uid)return {uid:'',data:{},history:[],activity:[],notifications:[]};
-          const cutoff=reportRange();return {uid,data:userData[uid]||{},
-            history:filterHistoryEntries(uid).filter(x=>x.timestamp>=cutoff),
-            activity:filteredAccountEvents().filter(x=>x.uid===uid&&validMs(x.timestamp)>=cutoff),
-            notifications:filterNotifications(uid).filter(x=>x.timestamp>=cutoff)};
-        };
-        const baseRenderReports=renderReports;
-        renderReports=function(){baseRenderReports();if(reportData().uid){g('reportBody').innerHTML=reportRows().map(x=>'<tr><td>'+esc(fmt(x.timestamp))+'</td><td>'+esc(x.source)+'</td><td>'+esc(x.action)+'</td><td class="detail">'+esc(x.details)+'</td></tr>').join('')||'<tr><td colspan="4">No recorded events in this period.</td></tr>';}};
-        // Print and export use the same filters as the visible tables.
-        g('exportUsers').onclick=()=>csv([['Email','UID','Verified','First seen','Last login','Matching actions'],...filteredUserEntries().filter(([uid,u])=>(uid+' '+(u.email||'')).toLowerCase().includes(g('userSearch').value.toLowerCase())).map(([uid,u])=>[u.email,uid,!!u.emailVerified,fmt(u.firstSeen),fmt(u.lastLogin),filteredAccountEvents().filter(e=>e.uid===uid).length])],'rabtech-filtered-users.csv');
-        g('exportActivity').onclick=()=>csv([['Time','Email','UID','Action','Details'],...filteredEvents().map(e=>[fmt(e.timestamp),e.email,e.uid,e.action,e.details])],'rabtech-filtered-activity.csv');
-        g('exportHistory').onclick=()=>{if(!g('historyUser').value&&!selectedUid())return notify('Select a user first');csv([['Time','Type','Event','Demo'],...selectedHistory().map(x=>[fmt(x.timestamp),x.type,x.event,!!x.demo])],'rabtech-filtered-history.csv');};
-        g('exportReport').onclick=()=>{if(!g('reportUser').value&&!selectedUid())return notify('Select a user first');csv([['Time','Source','Action / Event','Details'],...reportRows().map(x=>[fmt(x.timestamp),x.source,x.action,x.details])],'rabtech-filtered-report.csv');};
-        function renderCharts(){
-          const filtered=filteredAccountEvents(),counts={};
-          for(const e of filtered){const ms=validMs(e.timestamp);if(ms){const day=dateISO(ms);counts[day]=(counts[day]||0)+1;}}
-          const today=dateISO(Date.now()),days=[];const now=new Date();
-          for(let i=13;i>=0;i--){const d=new Date(now.getTime()-i*86400000);days.push(dateISO(d.getTime()));}
-          const max=Math.max(1,...days.map(d=>counts[d]||0));
-          g('overviewDaily').innerHTML=days.map(day=>'<button class="chart-bar" type="button" data-chart-day="'+day+'" title="'+day+': '+(counts[day]||0)+' actions; click to filter"><span class="chart-value">'+(counts[day]||0)+'</span><span class="fill" style="height:'+Math.max(2,Math.round((counts[day]||0)/max*130))+'px"></span><small>'+day.slice(5)+'</small></button>').join('');
-          const byAction={};filtered.forEach(e=>{const action=String(e.action||'Unspecified');byAction[action]=(byAction[action]||0)+1;});
-          const top=Object.entries(byAction).sort((a,b)=>b[1]-a[1]).slice(0,8),peak=Math.max(1,...top.map(x=>x[1]));
-          g('overviewActions').innerHTML=top.map(([action,n])=>'<div class="barrow"><span title="'+esc(action)+'">'+esc(action)+'</span><div class="bartrack"><div class="barfill" style="width:'+Math.round(n/peak*100)+'%"></div></div><strong>'+n+'</strong></div>').join('')||'<p class="subtle">No matching activity.</p>';
-          g('filterSummary').textContent=(selectedUid()?(users[selectedUid()]?.email||selectedUid()):'All recorded users')+' · '+filtered.length+' matching client-reported actions · '+filteredUserEntries().length+' matching profiles. Shared feeder status and schedules are not attributed to users.';
-          g('recentEvents').innerHTML=filtered.slice(0,6).map(e=>'<div style="padding:12px 0;border-bottom:1px solid var(--line)"><b>'+esc(e.action)+'</b><div class="detail">'+esc(e.email||e.uid)+' · '+esc(fmt(e.timestamp))+'</div></div>').join('')||'<p class="intro">No matching activity.</p>';
-          g('metricEvents').textContent=filtered.length;
-          g('metricUsers').textContent=filteredUserEntries().length;
-        }
-        const previousRender=render;
-        render=function(){previousRender();renderCharts();};
-        g('overviewDaily').addEventListener('click',e=>{const button=e.target.closest('[data-chart-day]');if(!button)return;g('globalFrom').value=button.dataset.chartDay;g('globalTo').value=button.dataset.chartDay;render();});
-        const applyFilters=()=>render();
-        for(const id of ['globalUser','globalSearch','globalFrom','globalTo'])g(id).addEventListener(id==='globalSearch'?'input':'change',applyFilters);
-        g('resetFilters').onclick=()=>{for(const id of ['globalUser','globalSearch','globalFrom','globalTo'])g(id).value='';g('userSearch').value='';g('activitySearch').value='';g('actionFilter').value='';render();};
-        g('printFiltered').onclick=()=>{
-          const title=g('pageHeading').textContent;
-          const uid=selectedUid()||g('reportUser').value||g('historyUser').value;
-          g('printHeader').innerHTML='<h2>RABTECH · '+esc(title)+'</h2><p>Account: '+esc(uid?(users[uid]?.email||uid):'All recorded users')+' · Dates: '+esc(g('globalFrom').value||'All')+' to '+esc(g('globalTo').value||'All')+' · Search: '+esc(query()||'None')+'</p><p>Generated: '+esc(new Date().toLocaleString())+' · Account activity and feeding history are application records, not proof of physical dispensing.</p>';
-          document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('print-target',el.dataset.page===activeTab));
-          window.print();
-        };
-        window.addEventListener('afterprint',()=>document.querySelectorAll('.print-target').forEach(el=>el.classList.remove('print-target')));
-        // Honor user selection from the Users table without changing the global filter silently.
-        g('usersBody').addEventListener('click',e=>{const b=e.target.closest('[data-report-uid]');if(b){g('globalUser').value=b.dataset.reportUid;render();}});
-        // USER DATA FIX: query the selected UID directly instead of relying only on
-        // a parent /rabtech/userData read, which Firebase rules may disallow.
-        const userDataReadState = {};
-        let userReadSequence = 0;
-        async function loadSelectedUserData(){
-          const uid = g('historyUser').value || selectedUid();
-          if (!uid) { g('userDataDiagnostic').textContent='Select a user first.';return; }
-          const request = ++userReadSequence;
-          g('userDataDiagnostic').textContent='Loading /rabtech/userData/'+uid+' ...';
-          try {
-            const snap = await db.ref('/rabtech/userData/'+uid).once('value');
-            if(request!==userReadSequence)return;
-            const value = snap.val();
-            userData[uid] = value && typeof value==='object' ? value : {};
-            userDataReadState[uid] = value === null ? 'No saved data at this UID' : 'Loaded from Firebase';
-            render();
-          } catch(err){
-            if(request!==userReadSequence)return;
-            userDataReadState[uid] = 'READ FAILED: '+err.message;
-            render();
-            error('Could not read selected user data: '+err.message+'. Check Firebase database rules.');
-          }
-        }
-        const originalHistoryRender = renderUserHistory;
-        renderUserHistory = function(){
-          originalHistoryRender();
-          const uid=g('historyUser').value||selectedUid();
-          if(!uid){g('userDataDiagnostic').textContent='Select a user first.';g('historyNotificationsBody').innerHTML='';return;}
-          const raw=userData[uid]||{};
-          const rawHistory=Object.values(raw.feedingHistory||{}).filter(v=>v&&typeof v==='object');
-          const rawNotifications=Object.values(raw.notifications||{}).filter(v=>v&&typeof v==='object');
-          const records=filterHistoryEntries(uid), notices=filterNotifications(uid);
-          g('historySummary').textContent=records.length+' matching events / '+rawHistory.length+' stored · '+notices.length+' matching notifications / '+rawNotifications.length+' stored · UID: '+uid;
-          g('userDataDiagnostic').textContent=userDataReadState[uid]||'Awaiting direct Firebase read (click Reload selected user data)';
-          g('historyNotificationsBody').innerHTML=notices.map(n=>'<tr><td>'+esc(fmt(n.timestamp))+'</td><td>'+esc(n.title||'—')+'</td><td>'+esc(n.body||n.message||n.text||'—')+'</td><td>'+esc(n.category||n.type||'—')+'</td></tr>').join('')||'<tr><td colspan="4">No matching notifications.</td></tr>';
-        };
-        g('reloadUserData').onclick=loadSelectedUserData;
-        g('historyUser').addEventListener('change',loadSelectedUserData);
-        g('globalUser').addEventListener('change',()=>{if(activeTab==='history')loadSelectedUserData();});
-        const previousShowTab=showTab;
-        showTab=function(t){previousShowTab(t);if(t==='history' && (g('historyUser').value||selectedUid()))loadSelectedUserData();};
-        // Prevent overwriting a direct read with a stale parent snapshot.
-        const previousWatch=watch;
-        watch=function(path,cb){
-          if(path==='/rabtech/userData'){
-            const ref=db.ref(path);
-            const success=snap=>{
-              const data=snap.val()||{};
-              for(const [uid,value] of Object.entries(data)){
-                if(value&&typeof value==='object')userData[uid]=value;
-              }
-              render();
-            };
-            const fail=e=>{console.warn('Parent userData read denied; selected UID reads remain available:',e.message);};
-            ref.on('value',success,fail);
-            unsubs.push(()=>ref.off('value',success));
-            return;
-          }
-          previousWatch(path,cb);
-        };
-        // Report notifications use the Firebase `body` field.
-        const oldRenderReportsForBody=renderReports;
-        renderReports=function(){oldRenderReportsForBody();const data=reportData();if(!data.uid)return;
-          g('reportNotifications').innerHTML=data.notifications.slice().sort((a,b)=>b.timestamp-a.timestamp).map(x=>'<div style="padding:10px 0;border-bottom:1px solid var(--line)"><b>'+esc(x.title||x.type||'Notification')+'</b><div class="detail">'+esc(x.body||x.message||x.text||x.event||'')+' · '+esc(fmt(x.timestamp))+'</div></div>').join('')||'<p class="subtle">No saved notifications for this period.</p>';
-        };
+// ---------- data model ----------
+const isDemo = () => false;
+function firstSeen(u) { const r = recs(u), t = [...r.h, ...r.n, ...r.p].map(x => x.ts).filter(Boolean), p = toMs(users[u]?.firstSeen), m = Math.min(...t, p || Infinity); return isFinite(m) ? m : 0 }
+const label = u => users[u]?.email || u;
+function recs(uid) {
+  const d = userData[uid]; if (!d) return { h: [], n: [], p: [] };
+  const c = cache[uid]; if (c && c.src === d) return c;
+  const mk = o => Object.entries(o || {}).filter(([, x]) => x && typeof x === 'object').map(([id, x]) => ({ ...x, id, uid, ts: toMs(x.timestamp ?? x.createdAt ?? x.time), demo: isDemo(x) }));
+  return cache[uid] = { src: d, h: mk(d.feedingHistory), n: mk(d.notifications), p: mk(d.pelletReadings) };
+}
+const F = () => ({ uid: $('fUser').value, q: $('fSearch').value.trim().toLowerCase(), from: $('fFrom').value, to: $('fTo').value, src: '' });
+const uids = f => f.uid ? [f.uid] : [...new Set([...Object.keys(users), ...PINNED, ...Object.keys(userData)])];
+const TF = { h: x => x.event + ' ' + x.type, n: x => x.title + ' ' + x.body + ' ' + x.category, p: x => x.value + '%' };
+function pick(k, f) {
+  const a = f.from ? dayStart(f.from) : 0, b = f.to ? dayEnd(f.to) : Infinity, out = [];
+  for (const u of uids(f)) for (const x of recs(u)[k]) {
+    if ((a || b < Infinity) && (!x.ts || x.ts < a || x.ts > b)) continue;
+    if ((f.src === 'real' && x.demo) || (f.src === 'demo' && !x.demo)) continue;
+    if (f.q && !(TF[k](x) + ' ' + label(u)).toLowerCase().includes(f.q)) continue;
+    out.push(x);
+  }
+  return out;
+}
+const act = x => { const s = String(x.event || '').toLowerCase(); return /refill/.test(s) ? 'refilled' : /opened/.test(s) ? 'opened' : /closed/.test(s) ? 'closed' : /fan.*\bon\b/.test(s) ? 'fan on' : /fan.*off/.test(s) ? 'fan off' : 'other' };
+function dailyMap(h, n, p) {
+  const m = {}, r = x => x.ts ? (m[dayKey(x.ts)] ||= { e: 0, feed: 0, fan: 0, ref: 0, alert: 0, pn: 0, pmin: 101, psum: 0 }) : null;
+  h.forEach(x => { const d = r(x); if (!d) return; d.e++; const a = act(x); if (a === 'opened') d.feed++; if (a === 'fan on') d.fan++; if (a === 'refilled') d.ref++ });
+  n.forEach(x => { const d = r(x); if (d && x.warn) d.alert++ });
+  p.forEach(x => { const d = r(x); if (!d) return; d.pn++; d.psum += Number(x.value) || 0; d.pmin = Math.min(d.pmin, Number(x.value) || 0) });
+  return m;
+}
+function stats(f) { const h = pick('h', f), n = pick('n', f), p = pick('p', f); return { h, n, p, m: dailyMap(h, n, p) } }
+const cmp = (a, b) => sortAsc ? a.ts - b.ts : b.ts - a.ts;
+const SUBK = { history: 'h', notifications: 'n', pellets: 'p' };
+function tableRows(f, S) {
+  S = S || stats(f); const k = SUBK[sub], t = $('udType').value, e = $('udExtra').value; let r = S[k];
+  if (k === 'h') r = r.filter(x => (!t || x.type === t) && (!e || act(x) === e));
+  if (k === 'n') r = r.filter(x => (!t || x.category === t) && (!e || (x.warn ? 'alert' : 'info') === e));
+  if (k === 'p' && t) { const [a, b] = t.split('-').map(Number); r = r.filter(x => x.value >= a && x.value <= b) }
+  return r.slice().sort(cmp);
+}
+
+// ---------- fetching ----------
+async function fetchUser(uid) {
+  if (load[uid] !== 'ok') load[uid] = 'loading';
+  try { const v = (await db.ref('/rabtech/userData/' + uid).once('value')).val(); userData[uid] = v && typeof v === 'object' ? v : {}; load[uid] = 'ok' }
+  catch (e) { load[uid] = 'ERR ' + (e.code || e.message); error('Cannot read data of ' + label(uid) + ': ' + (e.code || e.message) + '. Check the database rules.') }
+  schedule();
+}
+async function fetchAll(force) {
+  const ids = uids({ uid: '' }).filter(u => force || !load[u] || String(load[u]).startsWith('ERR'));
+  for (let i = 0; i < ids.length; i += 6) await Promise.all(ids.slice(i, i + 6).map(fetchUser));
+}
+
+// ---------- cell helpers ----------
+const pill = (t, c) => '<span class="pill ' + esc(c || String(t).toLowerCase()) + '">' + esc(t) + '</span>';
+const srcB = x => x.demo ? pill('Demo', 'demo') : pill('Recorded', 'real');
+const bar = v => '<span class="lvl"><i style="width:' + Math.min(100, Number(v) || 0) + '%"></i></span>' + esc(v) + '%';
+const C = {
+  h: { n: 'Feeding history', heads: ['Date & time', 'Type', 'Event'], row: x => [fmt(x.ts), pill(x.type || 'system'), esc(x.event || '—')] },
+  n: { n: 'Notifications', heads: ['Date & time', 'Title', 'Message', 'Category', 'Level'], row: x => [fmt(x.ts), esc(x.title || '—'), esc(x.body || x.message || '—'), pill(x.category || '—'), x.warn ? pill('Alert', 'alert') : pill('Info', 'fan')] },
+  p: { n: 'Pellet readings', heads: ['Date & time', 'Pellet level'], row: x => [fmt(x.ts), bar(x.value)] }
+};
+const CSVH = { h: ['Type', 'Event'], n: ['Category', 'Level', 'Title', 'Message'], p: ['Pellet level %'] };
+const CSVR = { h: x => [x.type, x.event], n: x => [x.category, x.warn ? 'Alert' : 'Info', x.title, x.body], p: x => [x.value] };
+const tbl = (h, rows) => '<table><thead><tr>' + h.map(x => '<th>' + x + '</th>').join('') + '</tr></thead><tbody>' + rows.map(r => '<tr>' + r.map(v => '<td>' + v + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+const DH = ['Date', 'Events', 'Feedings', 'Fan on', 'Refills', 'Alerts', 'Readings', 'Avg level', 'Lowest'];
+const dailyRows = (m, click = true) => Object.keys(m).sort().reverse().map(d => { const r = m[d]; return '<tr' + (click ? ' data-day="' + d + '" style="cursor:pointer"' : '') + '><td>' + fmtDay(d) + '</td><td>' + r.e + '</td><td>' + r.feed + '</td><td>' + r.fan + '</td><td>' + r.ref + '</td><td>' + r.alert + '</td><td>' + r.pn + '</td><td>' + (r.pn ? Math.round(r.psum / r.pn) + '%' : '—') + '</td><td>' + (r.pn ? r.pmin + '%' : '—') + '</td></tr>' }).join('');
+function slice(name, arr) {
+  const n = Math.max(1, Math.ceil(arr.length / PAGE)); pg[name] = Math.min(pg[name] || 0, n - 1); const p = pg[name];
+  return { rows: arr.slice(p * PAGE, p * PAGE + PAGE), nav: arr.length ? '<div class="pager"><button class="btn secondary" data-pg="' + name + ':-1"' + (p ? '' : ' disabled') + '>‹ Prev</button><span>' + (p * PAGE + 1) + '–' + Math.min(arr.length, p * PAGE + PAGE) + ' of ' + arr.length + '</span><button class="btn secondary" data-pg="' + name + ':1"' + (p < n - 1 ? '' : ' disabled') + '>Next ›</button></div>' : '' };
+}
+function svgPellets(rs) {
+  rs = rs.filter(x => x.ts).sort((a, b) => a.ts - b.ts); if (rs.length < 2) return '<p class="subtle">Not enough pellet readings in this range.</p>';
+  const W = 720, H = 220, L = 34, R = 8, T = 10, B = 22, t0 = rs[0].ts, t1 = rs[rs.length - 1].ts, X = t => L + (t - t0) / (t1 - t0 || 1) * (W - L - R), Y = v => T + (100 - Math.min(100, v)) / 100 * (H - T - B);
+  let d = '', prev = 0; rs.forEach(x => { d += (prev && x.ts - prev < 1296e5 ? 'L' : 'M') + X(x.ts).toFixed(1) + ' ' + Y(x.value).toFixed(1); prev = x.ts });
+  const grid = [0, 25, 50, 75, 100].map(v => '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '" stroke="#e2e9df"/><text x="' + (L - 5) + '" y="' + (Y(v) + 3) + '" font-size="9" text-anchor="end" fill="#71857a">' + v + '</text>').join('');
+  const xl = [0, .5, 1].map(f => { const t = t0 + f * (t1 - t0); return '<text x="' + X(t) + '" y="' + (H - 6) + '" font-size="9" text-anchor="' + (f === 0 ? 'start' : f === 1 ? 'end' : 'middle') + '" fill="#71857a">' + esc(intl({ month: 'short', day: 'numeric' }).format(t)) + '</text>' }).join('');
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto">' + grid + xl + '<path d="' + d + '" fill="none" stroke="#337b59" stroke-width="1.6"/></svg><p class="chart-caption">' + rs.length + ' readings (% level). Gaps longer than 36 h are not joined.</p>';
+}
+function dayList(f, m) { const ks = Object.keys(m).sort(), a = f.from || ks[0], b = f.to || today(); if (!a) return []; const out = []; for (let t = dayStart(a); t <= dayEnd(b) && out.length < 400; t += 864e5) out.push(dayKey(t)); return out }
+
+// ---------- renderers ----------
+function renderStatus() {
+  const on = online(); $('deviceBadge').textContent = on ? '● Online' : '● Offline'; $('deviceBadge').className = 'badge ' + (on ? 'on' : 'off');
+  $('metricOnline').textContent = on ? 'Online' : 'Offline'; $('metricSeen').textContent = status.lastSeen ? fmt(status.lastSeen) : 'Never';
+  [['oL1', 'l1'], ['oL2', 'l2'], ['oL3', 'l3']].forEach(([id, k]) => $(id).textContent = status[k] == null ? '—' : status[k] + '%');
+  $('oTemp').textContent = status.temp == null || status.tempValid === false ? '—' : status.temp + '°C';
+  $('oWater').textContent = status.waterLevel == null || status.waterValid === false || status.waterReliable === false ? '—' : status.waterLevel + '%';
+  $('oFan').textContent = status.fan === undefined ? '—' : status.fan ? 'On' : 'Off'; $('oResult').textContent = status.lastCommandResult || '—';
+  if (activeTab === 'device') renderDevice();
+}
+function renderDevice() {
+  const d = { Connection: online() ? 'Online' : 'Offline', 'Last heartbeat': fmt(status.lastSeen), 'Heartbeat age': status.lastSeen ? Math.max(0, Math.round((Date.now() - Number(status.lastSeen)) / 1000)) + ' sec' : '—', 'Pellet 1': status.l1 ?? '—', 'Pellet 2': status.l2 ?? '—', 'Pellet 3': status.l3 ?? '—', Fan: status.fan ? 'On' : 'Off', 'Temperature (outdoor)': status.tempValid === false || status.temp == null ? '—' : status.temp + ' °C', 'Water level': status.waterValid === false || status.waterReliable === false || status.waterLevel == null ? '—' : status.waterLevel + '%', 'Water distance': status.waterDistanceCm == null ? '—' : status.waterDistanceCm + ' cm', 'Hatch 1': String(status.hatch1 ?? '—'), 'Hatch 2': String(status.hatch2 ?? '—'), 'Hatch 3': String(status.hatch3 ?? '—'), 'Last command result': status.lastCommandResult || '—' };
+  $('deviceDetails').innerHTML = Object.entries(d).map(([k, v]) => '<div class="kv"><span>' + esc(k) + '</span><strong>' + esc(v) + '</strong></div>').join('');
+}
+function rSchedules() { $('scheduleDetails').innerHTML = [1, 2, 3].map(n => { const s = schedules['slot' + n]; const v = typeof s === 'string' ? s : s?.enabled ? s.time : 'Not set'; return '<div class="kv"><span>Slot ' + n + '</span><strong>' + esc(v || 'Not set') + '</strong></div>' }).join('') }
+function rOverview(f, S) {
+  $('metricUsers').textContent = uids(f).length; $('metricEvents').textContent = S.h.length;
+  const days = dayList(f, S.m), max = Math.max(1, ...days.map(d => S.m[d]?.e || 0));
+  $('overviewDaily').innerHTML = days.map((d, i) => { const n = S.m[d]?.e || 0; return '<button class="chart-bar" type="button" data-day="' + d + '" title="' + fmtDay(d) + ': ' + n + ' events"><span class="chart-value">' + n + '</span><span class="fill" style="height:' + Math.max(2, Math.round(n / max * 130)) + 'px"></span>' + (i % 6 === 0 || i === days.length - 1 ? '<small>' + d.slice(5) + '</small>' : '') + '</button>' }).join('') || '<p class="subtle">No data.</p>';
+  const by = {}; S.h.forEach(x => { const k = x.event || 'Unspecified'; by[k] = (by[k] || 0) + 1 });
+  const top = Object.entries(by).sort((a, b) => b[1] - a[1]).slice(0, 8), pk = Math.max(1, ...top.map(x => x[1]));
+  $('overviewActions').innerHTML = top.map(([a, n]) => '<div class="barrow"><span title="' + esc(a) + '">' + esc(a) + '</span><div class="bartrack"><div class="barfill" style="width:' + Math.round(n / pk * 100) + '%"></div></div><strong>' + n + '</strong></div>').join('') || '<p class="subtle">No matching events.</p>';
+  $('recentEvents').innerHTML = S.h.slice().sort((a, b) => b.ts - a.ts).slice(0, 6).map(x => '<div style="padding:12px 0;border-bottom:1px solid var(--line)"><b>' + esc(x.event) + '</b><div class="detail">' + esc(label(x.uid)) + ' · ' + fmt(x.ts) + '</div></div>').join('') || '<p class="intro">No matching activity.</p>';
+}
+function rUsers(f) {
+  const q = $('userSearch').value.toLowerCase(), S = stats({ ...f, q: '' }), c = (k, u) => S[k].filter(x => x.uid === u);
+  const rows = uids(f).filter(u => (u + ' ' + (users[u]?.email || '')).toLowerCase().includes(q)).sort((a, b) => (users[b]?.lastLogin || 0) - (users[a]?.lastLogin || 0));
+  $('usersBody').innerHTML = rows.map(u => { const p = users[u] || {}; return '<tr><td><button class="userlink" data-uid="' + esc(u) + '">' + esc(p.email || '(no profile)') + '</button></td><td class="detail">' + esc(u) + '</td><td>' + (p.emailVerified ? 'Yes' : 'No') + '</td><td>' + fmt(firstSeen(u)) + '</td><td>' + fmt(p.lastLogin) + '</td><td>' + c('h', u).length + '</td><td>' + c('n', u).filter(x => x.warn).length + '</td><td>' + c('p', u).length + '</td><td><button class="btn secondary" data-uid="' + esc(u) + '">Open data</button></td></tr>' }).join('') || '<tr><td colspan="9">No matching users.</td></tr>';
+}
+function actEvents(f) {
+  const q = $('activitySearch').value.toLowerCase(), a = $('actionFilter').value, A = f.from ? dayStart(f.from) : 0, B = f.to ? dayEnd(f.to) : Infinity;
+  return events.filter(e => { const t = toMs(e.timestamp), s = [e.uid, e.email, e.action, e.details].join(' ').toLowerCase(); return (!f.uid || e.uid === f.uid) && (!a || e.action === a) && ((!A && B === Infinity) || (t >= A && t <= B)) && s.includes(q) && (!f.q || s.includes(f.q)) });
+}
+function rActivity(f) {
+  const sl = slice('act', actEvents(f));
+  $('activityBody').innerHTML = sl.rows.map(e => '<tr><td>' + fmt(e.timestamp) + '</td><td>' + esc(e.email || e.uid) + '</td><td><b>' + esc(e.action) + '</b></td><td class="detail">' + esc(e.details || '—') + '</td></tr>').join('') || '<tr><td colspan="4">No matching events.</td></tr>';
+  let el = $('activityPager'); if (!el) { el = document.createElement('div'); el.id = 'activityPager'; $('activityBody').closest('.tablewrap').after(el) } el.innerHTML = sl.nav;
+}
+function rHistory(f, S) {
+  const k = SUBK[sub], all = tableRows(f, S), multi = !f.uid, c = C[k], sl = slice('ud', all), heads = c.heads.slice(); if (multi) heads.splice(1, 0, 'User');
+  $('udHead').innerHTML = '<tr>' + heads.map(h => '<th>' + h + '</th>').join('') + '</tr>';
+  $('udBody').innerHTML = sl.rows.map(x => { const r = c.row(x); if (multi) r.splice(1, 0, esc(label(x.uid))); return '<tr>' + r.map(v => '<td>' + v + '</td>').join('') + '</tr>' }).join('') || '<tr><td colspan="' + heads.length + '">No records match the current filters.</td></tr>';
+  $('udPager').innerHTML = sl.nav;
+  $('historySummary').textContent = all.length + ' matching ' + c.n.toLowerCase() + ' · times shown in Philippine time (UTC+8).';
+  $('subTabs').querySelectorAll('button').forEach(b => { const kk = SUBK[b.dataset.sub]; b.classList.toggle('active', b.dataset.sub === sub); b.textContent = C[kk].n + ' (' + S[kk].length + ')' });
+  $('sortBtn').textContent = sortAsc ? 'Oldest first' : 'Newest first';
+}
+function rReports(f, S) {
+  const lv = S.p.slice().sort((a, b) => b.ts - a.ts)[0], sum = k => Object.values(S.m).reduce((a, r) => a + r[k], 0);
+  const M = [['Feeding events', S.h.length], ['Feedings (hatch opened)', sum('feed')], ['Fan turned on', sum('fan')], ['Container refills', sum('ref')], ['Notifications', S.n.length], ['Alerts', S.n.filter(x => x.warn).length], ['Pellet readings', S.p.length], ['Latest pellet level', lv ? lv.value + '%' : '—']];
+  $('reportMetrics').innerHTML = M.map(([a, b]) => '<div class="reportmetric"><span>' + a + '</span><strong>' + b + '</strong></div>').join('');
+  $('reportPellets').innerHTML = svgPellets(S.p);
+  $('reportUsersBody').innerHTML = uids(f).map(u => { const g = k => S[k].filter(x => x.uid === u), t = Math.max(0, ...[...g('h'), ...g('n'), ...g('p')].map(x => x.ts)); return '<tr><td><button class="userlink" data-uid="' + esc(u) + '">' + esc(label(u)) + '</button></td><td>' + g('h').length + '</td><td>' + g('n').filter(x => x.warn).length + '</td><td>' + g('p').length + '</td><td>' + (t ? fmt(t) : '—') + '</td></tr>' }).join('');
+  $('reportBody').innerHTML = dailyRows(S.m) || '<tr><td colspan="9">No records in this range.</td></tr>';
+}
+function render() {
+  if ($('shell').classList.contains('hidden')) return;
+  syncUsers(); const f = F(), S = stats(f); renderStatus();
+  const ids = uids(f), ok = ids.filter(u => load[u] === 'ok').length, er = ids.filter(u => String(load[u] || '').startsWith('ERR'));
+  $('filterSummary').textContent = (f.uid ? label(f.uid) : 'All users') + ' · ' + (f.from || f.to ? (f.from ? fmtDay(f.from) : 'start') + ' → ' + (f.to ? fmtDay(f.to) : 'today') : 'All time') + ' · ' + S.h.length + ' feeding events · ' + S.n.length + ' notifications · ' + S.p.length + ' pellet readings';
+  $('userDataDiagnostic').textContent = 'Loaded ' + ok + ' of ' + ids.length + ' user(s)' + (er.length ? ' · read failed: ' + er.map(u => label(u) + ' (' + load[u].slice(4) + ')').join(', ') : '');
+  ({ overview: rOverview, users: rUsers, activity: rActivity, device: renderDevice, schedules: rSchedules, reports: rReports, history: rHistory })[activeTab]?.(f, S);
+}
+function syncUsers() {
+  const s = $('fUser'), cur = s.value, ids = uids({ uid: '' }).sort((a, b) => label(a).localeCompare(label(b)));
+  const h = '<option value="">All users</option>' + ids.map(u => '<option value="' + esc(u) + '">' + esc(label(u)) + '</option>').join('');
+  if (s.dataset.h !== h) { s.innerHTML = h; s.dataset.h = h; s.value = cur }
+}
+
+// ---------- print ----------
+function printDoc(title, body) {
+  const f = F();
+  $('printArea').innerHTML = '<div class="ph"><h2>RABTECH · ' + esc(title) + '</h2><p>Account: <b>' + esc(f.uid ? label(f.uid) : 'All users') + '</b> · Period: <b>' + esc(f.from || f.to ? (f.from ? fmtDay(f.from) : 'start') + ' → ' + (f.to ? fmtDay(f.to) : 'today') : 'All time') + '</b>' + (f.q ? ' · Search: <b>' + esc(f.q) + '</b>' : '') + '</p><p>Generated ' + esc(fmt(Date.now())) + ' (Philippine time).</p></div>' + body;
+  window.print();
+}
+window.addEventListener('afterprint', () => $('printArea').innerHTML = '');
+function printRecord(full) {
+  const f = F(), S = stats(f), ks = full ? ['h', 'n', 'p'] : [SUBK[sub]], T = full ? null : tableRows(f, S); let out = '';
+  for (const u of uids(f)) {
+    let s = ''; for (const k of ks) { const r = (full ? S[k].slice().sort(cmp) : T).filter(x => x.uid === u); if (r.length) s += '<h4>' + C[k].n + ' (' + r.length + ')</h4>' + tbl(C[k].heads, r.map(C[k].row)) }
+    if (s) out += '<section class="pu"><h3>' + esc(label(u)) + '</h3><p class="subtle">UID ' + esc(u) + '</p>' + s + '</section>';
+  }
+  printDoc(full ? 'Full user record' : C[SUBK[sub]].n, out || '<p>No records match the current filters.</p>');
+}
+function printReport() {
+  const f = F(), S = stats(f); let out = '';
+  for (const u of uids(f)) {
+    const g = k => S[k].filter(x => x.uid === u); if (!g('h').length && !g('n').length && !g('p').length) continue;
+    const m = dailyMap(g('h'), g('n'), g('p'));
+    out += '<section class="pu"><h3>' + esc(label(u)) + '</h3><p class="subtle">UID ' + esc(u) + ' · ' + g('h').length + ' feeding events · ' + g('n').length + ' notifications · ' + g('p').length + ' pellet readings</p>' + svgPellets(g('p')) + '<h4>Daily log</h4><table><thead><tr>' + DH.map(x => '<th>' + x + '</th>').join('') + '</tr></thead><tbody>' + dailyRows(m, false) + '</tbody></table></section>';
+  }
+  printDoc('Report', out || '<p>No records match the current filters.</p>');
+}
+function printTab() {
+  if (activeTab === 'history') return printRecord(false);
+  if (activeTab === 'overview' || activeTab === 'reports') return printReport();
+  const sec = document.querySelector('[data-page="' + activeTab + '"] .panel'); printDoc($('pageHeading').textContent, sec ? sec.innerHTML : '');
+}
+
+// ---------- navigation / filters ----------
+const HEAD = { overview: ['Admin overview', 'Monitor your feeder and each user\'s saved data.'], users: ['Registered users', 'Accounts and how much data each one has saved.'], activity: ['User activity', 'Actions reported by the website.'], device: ['Device monitoring', 'Live readings and connection health.'], schedules: ['Feeding schedules', 'Current schedule configuration.'], history: ['User data', 'Every saved record per user: feeding history, notifications and pellet readings.'], reports: ['User reports', 'Daily totals, pellet level trend and per-user summary.'], settings: ['Admin settings', 'Account and access information.'] };
+function showTab(t) {
+  activeTab = t; document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === t)); document.querySelectorAll('[data-page]').forEach(s => s.classList.toggle('hidden', s.dataset.page !== t));
+  $('pageTitle').textContent = HEAD[t][0]; $('pageHeading').textContent = HEAD[t][0]; $('pageIntro').textContent = HEAD[t][1];
+  $('adminFilterBar').classList.toggle('hidden', ['device', 'schedules', 'settings'].includes(t)); pg = {}; render();
+}
+const OPT = { history: [['Type', [['servo', 'Servo'], ['fan', 'Fan'], ['sensor', 'Sensor']]], ['Action', [['opened', 'Hatch opened'], ['closed', 'Hatch closed'], ['fan on', 'Fan on'], ['fan off', 'Fan off'], ['refilled', 'Refilled']]]], notifications: [['Category', [['servo', 'Servo'], ['fan', 'Fan'], ['sensor', 'Sensor']]], ['Level', [['alert', 'Alerts'], ['info', 'Info']]]], pellets: [['Pellet level', [['0-0', 'Empty (0%)'], ['1-20', '1–20%'], ['21-50', '21–50%'], ['51-100', '51–100%']]], null] };
+function setupSelects() { OPT[sub].forEach((o, i) => { const s = $(i ? 'udExtra' : 'udType'); s.classList.toggle('hidden', !o); s.value = ''; if (o) s.innerHTML = '<option value="">' + o[0] + ': all</option>' + o[1].map(([v, l]) => '<option value="' + v + '">' + l + '</option>').join('') }) }
+function resetFilters() { $('fUser').value = ''; $('fSearch').value = ''; $('fFrom').value = DEFAULT_FROM; $('fTo').value = today(); $('userSearch').value = ''; $('activitySearch').value = ''; $('actionFilter').value = ''; setupSelects(); pg = {}; schedule() }
+document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+for (const id of ['fUser', 'fFrom', 'fTo', 'udType', 'udExtra', 'actionFilter']) $(id).onchange = () => { pg = {}; schedule() };
+for (const id of ['fSearch', 'userSearch', 'activitySearch']) $(id).oninput = () => { clearTimeout(qTimer); qTimer = setTimeout(() => { pg = {}; schedule() }, 200) };
+$('fPrint').onclick = printTab; $('printTable').onclick = () => printRecord(false); $('printFull').onclick = () => printRecord(true);
+$('subTabs').onclick = e => { const b = e.target.closest('[data-sub]'); if (b) { sub = b.dataset.sub; pg = {}; setupSelects(); render() } };
+$('sortBtn').onclick = () => { sortAsc = !sortAsc; pg = {}; render() };
+$('reloadUserData').onclick = () => { uids(F()).forEach(fetchUser); notify('Reloading user data…') };
+document.addEventListener('click', e => {
+  const p = e.target.closest('[data-pg]'); if (p) { const [n, d] = p.dataset.pg.split(':'); pg[n] = (pg[n] || 0) + Number(d); return render() }
+  const u = e.target.closest('[data-uid]'); if (u) { $('fUser').value = u.dataset.uid; return showTab('history') }
+  const d = e.target.closest('[data-day]'); if (d) { $('fFrom').value = $('fTo').value = d.dataset.day; pg = {}; d.tagName === 'TR' ? showTab('history') : render() }
+});
+$('exportHistory').onclick = () => { const f = F(), k = SUBK[sub]; csv([['Date & time (PH)', 'User', 'UID', ...CSVH[k]], ...tableRows(f).map(x => [fmt(x.ts), label(x.uid), x.uid, ...CSVR[k](x)])], 'rabtech-' + sub + '.csv') };
+$('exportReport').onclick = () => { const S = stats(F()); csv([DH, ...Object.keys(S.m).sort().map(d => { const r = S.m[d]; return [d, r.e, r.feed, r.fan, r.ref, r.alert, r.pn, r.pn ? Math.round(r.psum / r.pn) : '', r.pn ? r.pmin : ''] })], 'rabtech-daily-log.csv') };
+$('exportUsers').onclick = () => { const f = F(), S = stats({ ...f, q: '' }); csv([['Email', 'UID', 'Verified', 'First seen', 'Last login', 'Feeding events', 'Alerts', 'Pellet readings'], ...uids(f).map(u => [users[u]?.email || '', u, !!users[u]?.emailVerified, fmt(firstSeen(u)), fmt(users[u]?.lastLogin), S.h.filter(x => x.uid === u).length, S.n.filter(x => x.uid === u && x.warn).length, S.p.filter(x => x.uid === u).length])], 'rabtech-users.csv') };
+$('exportActivity').onclick = () => csv([['Time', 'Email', 'UID', 'Action', 'Details'], ...actEvents(F()).map(e => [fmt(e.timestamp), e.email, e.uid, e.action, e.details])], 'rabtech-activity.csv');
+$('refreshStatus').onclick = async () => { try { status = (await db.ref('/rabtech/status').once('value')).val() || {}; render(); notify('Status refreshed') } catch (e) { error(e.message) } };
+$('openDashboard').onclick = () => window.open('index.html', '_blank', 'noopener');
+setInterval(() => { if (!$('shell').classList.contains('hidden')) renderStatus() }, 5000);
+setInterval(() => { const f = F(); if (!$('shell').classList.contains('hidden') && f.uid) fetchUser(f.uid) }, 60000);
+
+// ---------- authentication (unchanged behaviour) ----------
+$('reveal').onclick = () => { const i = $('password'), b = $('reveal'), show = i.type === 'password'; i.type = show ? 'text' : 'password'; b.textContent = show ? 'Hide' : 'Show'; b.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); b.setAttribute('aria-pressed', String(show)) };
+$('loginForm').onsubmit = async e => {
+  e.preventDefault(); $('loginError').classList.add('hidden'); $('loginBtn').disabled = true;
+  try { await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION); const c = await auth.signInWithEmailAndPassword($('email').value.trim(), $('password').value); await c.user.reload(); if (!c.user.emailVerified) throw Error('Verify your email before signing in.'); if (c.user.uid !== ADMIN_UID) throw Error('This account does not have administrator access.'); $('password').value = '' }
+  catch (err) { await auth.signOut(); $('loginError').textContent = err.message; $('loginError').classList.remove('hidden') } finally { $('loginBtn').disabled = false }
+};
+function stop() { unsubs.forEach(fn => fn()); unsubs = []; users = {}; events = []; status = {}; schedules = {}; userData = {}; load = {}; cache = {}; clearError() }
+$('signout').onclick = () => auth.signOut();
+function watch(path, cb) { const r = db.ref(path), on = s => { cb(s.val() || {}); schedule(); clearError() }, fail = e => error('Unable to read ' + path + ': ' + e.message); r.on('value', on, fail); unsubs.push(() => r.off('value', on)) }
+function startListeners() {
+  fetchAll();
+  watch('/rabtech/users', v => { users = v; fetchAll() }); watch('/rabtech/status', v => status = v); watch('/rabtech/schedules', v => schedules = v);
+  watch('/rabtech/activity', v => events = Object.entries(v).map(([id, x]) => ({ id, ...x })).sort((a, b) => Number(b.timestamp) - Number(a.timestamp)));
+}
+auth.onAuthStateChanged(async u => {
+  const token = ++session; stop();
+  if (!u) { $('login').classList.remove('hidden'); $('shell').classList.add('hidden'); return }
+  try {
+    await u.reload(); if (token !== session) return;
+    if (!u.emailVerified || u.uid !== ADMIN_UID) { await auth.signOut(); return }
+    const s = await db.ref('/rabtech/users').once('value'); if (token !== session) return;
+    users = s.val() || {}; $('adminEmail').textContent = u.email; $('myUid').textContent = u.uid; $('login').classList.add('hidden'); $('shell').classList.remove('hidden');
+    resetFilters(); showTab('overview'); startListeners();
+  } catch (e) { if (token !== session) return; await auth.signOut(); $('loginError').textContent = 'Unable to authorize admin access: ' + e.message; $('loginError').classList.remove('hidden') }
+});
+
     </script>
 </body>
 
